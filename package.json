@@ -1,0 +1,19 @@
+{
+  "name": "atomic-markets",
+  "version": "0.1.0",
+  "description": "Generalized atomic swap marketplaces for ERC-777(advanced token standard) and ERC-721 (non-fungible tokens)",
+  "main": "index.js",
+  "repository": "git@github.com:nori-dot-eco/atomic-markets.git",
+  "author": "jaycen@nori.com",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "babel-plugin-dynamic-import-node": "^2.1.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "eslint": "^4.10.0",
+    "truffle": "^4.1.14",
+    "zeppelin-solidity": "^1.12.0"
+  }
+}
