@@ -33,7 +33,7 @@ context('Setup test environment', () => {
   });
 
   context('Execute tests', () => {
-    // SelectableMarketplaceTests();
+    SelectableMarketplaceTests();
     FifoMarketplaceTests();
   });
 });

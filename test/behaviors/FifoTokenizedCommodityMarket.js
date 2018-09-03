@@ -4,18 +4,17 @@ const getNamedAccounts = require('../helpers/getNamedAccounts');
 let fifoMarket, nft, token;
 
 const testFifoSaleBehavior = () => {
-  contract(`FifoTokenizedCommodityMarket`, accounts => {
+  contract(`FifoTokenizedCommodityMarket`, () => {
     beforeEach(async () => {
-      console.log(accounts[0]);
       token = await artifacts
         .require('ExampleAdvancedToken')
-        .new('Token', 'sym', 1, 0, accounts[0]);
+        .new('Token', 'sym', 1, 0, getNamedAccounts(web3).admin0);
       nft = await artifacts
         .require('ExampleNFT')
-        .new('NFT', 'nft', accounts[0]);
+        .new('NFT', 'nft', getNamedAccounts(web3).admin0);
       fifoMarket = await artifacts
         .require('FifoMarketplace')
-        .new([nft.address, token.address], accounts[0]);
+        .new([nft.address, token.address], getNamedAccounts(web3).admin0);
     });
 
     context('Create a sale using authorizeOperator', () => {
