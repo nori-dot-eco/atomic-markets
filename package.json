@@ -9,11 +9,20 @@
   "private": false,
   "devDependencies": {
     "babel-plugin-dynamic-import-node": "^2.1.0",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
+    "babel-register": "^6.26.0",
     "eslint": "^4.10.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^3.0.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eth-contract-class": "^0.0.12",
     "truffle": "^4.1.14",
+    "truffle-contract": "^3.0.6",
+    "truffle-hdwallet-provider": "^0.0.6",
+    "web3": "^0.20.6",
     "zeppelin-solidity": "^1.12.0"
   }
 }

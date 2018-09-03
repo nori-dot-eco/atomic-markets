@@ -23,6 +23,7 @@ module.exports = {
     camelcase: 'off',
     'no-plusplus': 'off',
     'one-var': 'off',
+    'no-var': 'error',
     'prefer-destructuring': 'off',
     'import/no-extraneous-dependencies': [
       'error',

@@ -190,7 +190,7 @@ contract StandardTokenizedNftMarket is Market {
   }
 
   function _split(uint256 _tokenId, address _to, uint256 _amount) internal {
-    commodityContract.split(_tokenId, _to, _amount);
+    //commodityContract.split(_tokenId, _to, _amount);
   }
   //todo jaycen can we remove these and just fetch tokenIdToSell?
   function getSalePrice(uint256 _tokenId) public view returns (uint) {

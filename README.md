@@ -1,3 +1,8 @@
+Todo:
+
+- make sure web31 dependency inside eip820 submodule doesn't interfere with web3 < 1 in root
+- install directions (including for submodule)
+
 # Atomic Swap Marketplaces
 
 The smart contracts contained herein will allow you to create a marketplace for the swapping of Ethereum non-fungible tokens(NFT) and advanced tokens.

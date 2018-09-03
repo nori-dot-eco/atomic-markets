@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
-import "../eip721/MintableCommodity.sol";
+import "../eip721/BasicCommodity.sol";
 
-contract ExampleNFT is MintableCommodity {
+contract ExampleNFT is BasicCommodity {
 
   constructor(
     string _name,
