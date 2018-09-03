@@ -34,6 +34,6 @@ context('Setup test environment', () => {
 
   context('Execute tests', () => {
     SelectableMarketplaceTests();
-    FifoMarketplaceTests();
+    // FifoMarketplaceTests();
   });
 });

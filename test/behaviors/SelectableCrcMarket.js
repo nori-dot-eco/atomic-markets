@@ -1,26 +1,30 @@
 /* globals network */
+const ExampleAdvancedToken = artifacts.require('ExampleAdvancedToken');
+const ExampleNFT = artifacts.require('ExampleNFT');
+const SelectableMarketplace = artifacts.require('SelectableMarketplace');
 const getNamedAccounts = require('../helpers/getNamedAccounts');
 
-let selectableMarket, nft, token;
+let selectableMarket, nft, token, admin, buyer, seller;
 
 const testSelectableSaleBehavior = () => {
   contract(`FifoTokenizedCommodityMarket`, () => {
     beforeEach(async () => {
-      token = await artifacts
-        .require('ExampleAdvancedToken')
-        .new('Token', 'sym', 1, 0, getNamedAccounts(web3).admin0);
-      nft = await artifacts
-        .require('ExampleNFT')
-        .new('NFT', 'nft', getNamedAccounts(web3).admin0);
-      selectableMarket = await artifacts
-        .require('FifoMarketplace')
-        .new([nft.address, token.address], getNamedAccounts(web3).admin0);
+      ({ buyer0: buyer, seller0: seller, admin0: admin } = getNamedAccounts(
+        web3
+      ));
+      token = await ExampleAdvancedToken.deployed();
+      nft = await ExampleNFT.deployed();
+      selectableMarket = await SelectableMarketplace.deployed();
+      await token.mint(buyer, web3.toWei('100'), '');
+      await nft.mint(seller, '', web3.toWei('100'), '');
     });
 
     context('Create a sale using authorizeOperator', () => {
-      describe('revokeOperator', () => {
-        it('should cancel the sale in the market', () => {
-          assert.ok(true);
+      describe('authorizeOperator', () => {
+        it('should create an NFT sale listing in the market', async () => {
+          await nft.authorizeOperator(selectableMarket.address, 0, '100', {
+            from: seller,
+          });
         });
       });
     });

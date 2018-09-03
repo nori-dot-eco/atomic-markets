@@ -36,9 +36,10 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, IEIP777Toke
     address,
     uint tokenId,
     uint256,
-    bytes userData,
+    bytes _userData,
     bytes
   ) public {
+    uint256 price = ConversionUtils.bytesToUint(_userData);
     require(
       address(commodityContract) == msg.sender,
       "Only the commodity contract can use 'madeOperatorForCommodity'"
@@ -52,8 +53,8 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, IEIP777Toke
       1,
       1,
       from,
-      1000000000000000000,
-      userData
+      price,
+      _userData
     );
   }
 

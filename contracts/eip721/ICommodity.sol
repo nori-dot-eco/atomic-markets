@@ -10,7 +10,7 @@ interface ICommodity {
   function approve(address to, uint256 tokenId) public;
   // TODO Jaycen -- do we need a way to authorize operator for all commodities owned?
   //function authorizeOperator(address operator) public;
-  function authorizeOperator(address operator, uint256 tokenId) public;
+  function authorizeOperator(address operator, uint256 tokenId, bytes data) public;
   function revokeOperator(address operator, uint256 tokenId) public;
   // do we need this for backward/third party compat reasons (todo jaycen)
   // function isOperatorFor(address operator, address tokenHolder) public constant returns (bool);

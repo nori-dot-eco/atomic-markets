@@ -27,6 +27,7 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
     setInterfaceImplementation("ICommodityOperator", this);
   }
 
+  //todo remove?
   function _createMarketItem (address _marketItem) private onlyOwner {
     MarketLib.Market memory marketItem = MarketLib.Market({
         tokenContract: address(_marketItem)

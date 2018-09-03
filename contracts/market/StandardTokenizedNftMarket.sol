@@ -4,6 +4,7 @@ import "../eip777/IEIP777.sol";
 import "../eip721/ICommodity.sol";
 import "./Market.sol";
 import "../../node_modules/zeppelin-solidity/contracts//math/SafeMath.sol";
+import "../utils/ConversionUtils.sol";
 
 
 contract StandardTokenizedNftMarket is Market {
@@ -21,7 +22,9 @@ contract StandardTokenizedNftMarket is Market {
   event CommodityReceived(address sender);
 
   constructor(address[] _marketItems, address _owner) Market(_marketItems, _owner) public {
-    // Delegate constructor
+    setCommodityContract(_marketItems[0]);
+    setTokenContract(_marketItems[1]);
+    // and delegate constructor
   }
 
   function setCommodityContract (address _commodityContract) internal onlyOwner {

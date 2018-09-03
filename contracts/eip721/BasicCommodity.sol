@@ -565,7 +565,7 @@ contract BasicCommodity is Ownable, ERC820Implementer, ICommodity, IMintableComm
   ///  In combination with ERC820, it dials a contract address, and if it is
   /// listed as the market contract, creates a sale in the context of that contract.
   /// Note: it can also be used to authorize any third party as a sender of the bundle.
-  function authorizeOperator(address _operator, uint256 _tokenId) public {
+  function authorizeOperator(address _operator, uint256 _tokenId, bytes _data) public {
     require(_unlocked(_tokenId), "You cannot authorize an operator for a locked commodity");
     require(_operator != msg.sender, "You cannot authorize yourself as an operator");
     approve(_operator, _tokenId);
@@ -577,7 +577,7 @@ contract BasicCommodity is Ownable, ERC820Implementer, ICommodity, IMintableComm
       _operator,
       _tokenId,
       commodities[_tokenId].value, //todo allow for fractional values to be passed by using the split function
-      "",
+      _data,
       "",
       false
     );
