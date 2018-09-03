@@ -19,12 +19,40 @@ const testSelectableSaleBehavior = () => {
       await nft.mint(seller, '', web3.toWei('100'), '');
     });
 
-    context('Create a sale using authorizeOperator', () => {
-      describe('authorizeOperator', () => {
+    context('Create a NFT sale using authorizeOperator', () => {
+      describe('ExampleNFT.authorizeOperator', () => {
         it('should create an NFT sale listing in the market', async () => {
           await nft.authorizeOperator(selectableMarket.address, 0, '100', {
             from: seller,
           });
+        });
+      });
+    });
+
+    context('Create a NFT sale and then buy using tokens', () => {
+      beforeEach(async () => {
+        await nft.authorizeOperator(
+          selectableMarket.address,
+          0,
+          web3.fromAscii(web3.toWei('100')),
+          {
+            from: seller,
+          }
+        );
+      });
+      describe('ExampleAdvancedToken.authorizeOperator', () => {
+        it('should purchase the NFT for sale', async () => {
+          let nftOwner = await nft.ownerOf(0);
+          assert.equal(nftOwner, seller);
+          await token.authorizeOperator(
+            selectableMarket.address,
+            web3.toWei('100'),
+            {
+              from: buyer,
+            }
+          );
+          nftOwner = await nft.ownerOf(0);
+          assert.equal(nftOwner, buyer);
         });
       });
     });
