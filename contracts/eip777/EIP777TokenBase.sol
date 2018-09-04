@@ -203,28 +203,46 @@ contract EIP777TokenBase is Ownable, Ierc20, IEIP777, ERC820Implementer {
     );
   }
 
-  /// @notice Authorize a third party `_operator` to manage (send) `msg.sender`'s tokens.
-  /// @param _operator The operator that wants to be Authorized
-  //todo jaycen pretty sure overloads dont work so calling the following is impossible
-  function authorizeOperator(address _operator) public {
-    require(_operator != msg.sender, "You cannot designate yourself as an operator");
-    mAuthorized[_operator][msg.sender] = true;
-    emit AuthorizedOperator(_operator, msg.sender);
-  }
+  // /// @notice Authorize a third party `_operator` to manage (send) `msg.sender`'s tokens.
+  // /// @param _operator The operator that wants to be Authorized
+  // //todo jaycen pretty sure overloads dont work so calling the following is impossible
+  // function authorizeOperator(address _operator) public {
+  //   require(_operator != msg.sender, "You cannot designate yourself as an operator");
+  //   mAuthorized[_operator][msg.sender] = true;
+  //   emit AuthorizedOperator(_operator, msg.sender);
+  // }
+  // /// @notice Authorize a third party `_operator` to manage [only some] (send) `msg.sender`'s tokens.
+  // /// @param _operator The operator that wants to be Authorized
+  // function authorizeOperator(address _operator, uint256 _value) public {
+  //   require(_operator != msg.sender, "You cannot designate yourself as an operator");
+  //   //todo jaycen only authorize an allowance
+  //   mAllowed[msg.sender][_operator] = _value;
+  //   //todo jaycen is the following needed, It is not in the spec
+  //   mAuthorized[_operator][msg.sender] = true;
+  //   callOperator(
+  //     _operator,
+  //     msg.sender,
+  //     _operator,
+  //     _value,
+  //     "0x0",
+  //     "0x0",
+  //     false
+  //   );
+  //   emit AuthorizedOperator(_operator, msg.sender);
+  // }
+
   /// @notice Authorize a third party `_operator` to manage [only some] (send) `msg.sender`'s tokens.
   /// @param _operator The operator that wants to be Authorized
-  function authorizeOperator(address _operator, uint256 _value) public {
+  function authorizeOperator(address _operator, bytes _userData) public {
+    //todo somehow use an allowance instead of authorizing ALL of users bal & match to the above two functions inner logic
     require(_operator != msg.sender, "You cannot designate yourself as an operator");
-    //todo jaycen only authorize an allowance
-    mAllowed[msg.sender][_operator] = _value;
-    //todo jaycen is the following needed, It is not in the spec
     mAuthorized[_operator][msg.sender] = true;
     callOperator(
       _operator,
       msg.sender,
       _operator,
-      _value,
-      "0x0",
+      0, //todo <-sanity check this
+      _userData,
       "0x0",
       false
     );
@@ -266,12 +284,9 @@ contract EIP777TokenBase is Ownable, Ierc20, IEIP777, ERC820Implementer {
   ) public {
     //todo jaycen for somereason the following two lines werent included in the 777
     // the spec seems to not like wanting to spend allowances, look into why
-    require(_value <= mAllowed[_from][msg.sender], "An operator can only send a value that is <= their current allowance");
-    mAllowed[_from][msg.sender] = mAllowed[_from][msg.sender].sub(_value);
-    require(
-      isOperatorFor(_operator, _from),
-      "Only an operator can send on behalf of the token owner"
-    ); // todo, decide if we really want both isOperatorFor AND mAllowed allowances
+    require(isOperatorFor(_operator, _from) || _value <= mAllowed[_from][msg.sender], "An operator can only send a value that is <= their current allowance");
+    //mAllowed[_from][msg.sender] = mAllowed[_from][msg.sender].sub(_value); todo fix this
+
     doSend(
       _from,
       _to,

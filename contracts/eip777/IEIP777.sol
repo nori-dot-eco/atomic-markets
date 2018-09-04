@@ -9,7 +9,8 @@ interface IEIP777 {
 
     function send(address to, uint256 amount) public;
     function send(address to, uint256 amount, bytes userData) public;
-    function authorizeOperator(address operator) public;
+
+    function authorizeOperator(address _operator, bytes _userData) public;
     function revokeOperator(address operator) public;
     function isOperatorFor(address operator, address tokenHolder) public view returns (bool);
     function operatorSend(

@@ -19,6 +19,7 @@
     "eslint-config-prettier": "^3.0.1",
     "eslint-plugin-import": "^2.14.0",
     "eth-contract-class": "^0.0.12",
+    "ethereumjs-abi": "^0.6.5",
     "truffle": "^4.1.14",
     "truffle-contract": "^3.0.6",
     "truffle-hdwallet-provider": "^0.0.6",

@@ -1,8 +1,19 @@
 /* globals network */
+const abi = require('ethereumjs-abi');
+
 const ExampleAdvancedToken = artifacts.require('ExampleAdvancedToken');
 const ExampleNFT = artifacts.require('ExampleNFT');
 const SelectableMarketplace = artifacts.require('SelectableMarketplace');
 const getNamedAccounts = require('../helpers/getNamedAccounts');
+
+function encodeCall(name, _arguments, values) {
+  const methodId = abi.methodID(name, _arguments).toString('hex');
+  const params = abi.rawEncode(_arguments, values).toString('hex');
+  return `0x${methodId}${params}`;
+}
+
+const buy = (from, id, value) =>
+  encodeCall('buy', ['address', 'uint256', 'uint256'], [from, id, value]);
 
 let selectableMarket, nft, token, admin, buyer, seller;
 
@@ -46,7 +57,7 @@ const testSelectableSaleBehavior = () => {
           assert.equal(nftOwner, seller);
           await token.authorizeOperator(
             selectableMarket.address,
-            web3.toWei('100'),
+            buy(buyer, 0, web3.toWei('100')),
             {
               from: buyer,
             }
