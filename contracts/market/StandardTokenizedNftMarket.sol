@@ -53,55 +53,32 @@ contract StandardTokenizedNftMarket is Market {
   /// @dev transfers buyers token to seller.
   /// Does NOT transfer sellers commodity (token) to buyer
   function _buy(address _buyer, uint256 _tokenId, uint256 _amount) internal returns (uint256) {
-    // Get a reference to the sale struct
     MarketLib.Sale storage sale = tokenIdToSell[_tokenId];
-
-    // Explicitly check that this Sale is currently live.
-    // (Because of how Ethereum mappings work, we can't just count
-    // on the lookup above failing. An invalid _tokenId will just
-    // return an sale object that is all zeros.)
-    require(_isOnSale(sale), "You can only buy a commodity that is currently on sale");
-
-    require(_buyer != sale.seller, "You cannot buy your own commodity");
-
-    // Check that the incoming amount is < or equal to the commodity value
+    require(_isOnSale(sale), "You can only buy a NFT that is currently on sale");
+    require(_buyer != sale.seller, "You cannot buy your own NFT");
     require(
       _amount <= sale.value,
       "You can only purchase a value of the current commodity that is <= its bundle value"
     );
 
-    // Grab a reference to the seller before the sale struct
-    // gets deleted.
     address seller = sale.seller;
 
     if (_amount == sale.value) {
-    // The bid is good! Remove the sale before sending the fees
-    // to the sender so we can't have a re-entrancy attack.
       _removeSale(_tokenId);
     } else if (_amount < sale.value && _amount > 0) {
-      //todo jaycen make sure that failing half way through and send of tokens failing reverts the sale to original value
       sale.value = _updateSale(_tokenId, _amount);
     } else {
       revert("Invalid value specification");
     }
 
-    // Transfer proceeds to seller (if there are any!)
     if (_amount > 0) {
-      // todo jaycen
+      // todo add market fee taking logic
       //  Calculate the seller's cut.
       // (NOTE: _computeCut() is guaranteed to return a
       //  number <= _amount, so this subtraction can't go negative.)
       // uint256 marketCut = _computeCut(_amount);
       // uint256 sellerProceeds = sale.value - marketCut;
 
-      // NOTE: Doing a transfer() in the middle of a complex
-      // method like this is generally discouraged because of
-      // re-entrancy attacks and DoS attacks if the seller is
-      // a contract with an invalid fallback function. We explicitly
-      // guard against re-entrancy attacks by removing the sale
-      // before calling transfer(), and the only thing the seller
-      // can DoS is the sale of their own commodity! (And if it's an
-      // accident, they can call cancelSale(). )
       tokenContract.operatorSend(
         this,
         _buyer,
@@ -125,8 +102,6 @@ contract StandardTokenizedNftMarket is Market {
     uint256 _value,
     bytes _misc
   ) internal {
-    // todo jaycen PRELAUNCH before launch ensure selling by authorize operator
-    // introduces no risk and escrow is definitely not needed
     require(commodityContract.isOperatorForOne(this, _tokenId), "The market is not currently an operator for this commodity");
     MarketLib.Sale memory sale = MarketLib.Sale(
       uint256(_tokenId),
@@ -161,7 +136,7 @@ contract StandardTokenizedNftMarket is Market {
     delete tokenIdToSell[_tokenId];
   }
 
-  // todo jaycen via revokeOperator
+  // todo
   /// @dev Removes a sale from the list of open sales.
   /// @param _tokenId - ID of commodity on sale.
   function _updateSale(uint256 _tokenId, uint256 _amount) internal returns (uint256) {
@@ -182,7 +157,6 @@ contract StandardTokenizedNftMarket is Market {
     uint256 // amount
   ) internal {
     address seller = commodityContract.ownerOf(_tokenId);
-    // it will throw if transfer fails
     commodityContract.operatorSendOne(
       seller,
       _buyer,
@@ -192,10 +166,6 @@ contract StandardTokenizedNftMarket is Market {
     );
   }
 
-  function _split(uint256 _tokenId, address _to, uint256 _amount) internal {
-    //commodityContract.split(_tokenId, _to, _amount);
-  }
-  //todo jaycen can we remove these and just fetch tokenIdToSell?
   function getSalePrice(uint256 _tokenId) public view returns (uint) {
     return tokenIdToSell[_tokenId].value;
   }

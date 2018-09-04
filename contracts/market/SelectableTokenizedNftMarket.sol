@@ -11,8 +11,7 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, IEIP777Toke
   }
 
   function buy(address _from, uint256 _tokenId, uint256 _amount) public {
-    // _buy will throw if the bid or funds transfer fails todo jaycen fix static 0 addr
-    require(address(this) == msg.sender);
+    require(address(this) == msg.sender, "You can only call the buy function using callOperator on the token contract");
     _buy(_from, _tokenId, _amount);
     _transfer(
       _from,
@@ -20,13 +19,6 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, IEIP777Toke
       _tokenId,
       _amount
     );
-    // todo jaycen disable the above two lines and enable the following. Functionality is ok, but it breaks tests
-    // uint256 newSaleAmount = _buy(_from, _tokenId, _amount);
-    // if (newSaleAmount != _amount) {
-    //     _split(_tokenId, msg.sender, _amount);
-    // } else {
-    //     _transfer(_from, msg.sender, _tokenId, _amount);
-    // }
   }
 
   /// @dev erc820 introspection : handler invoked when
@@ -109,9 +101,7 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, IEIP777Toke
       revert("This contract does not currently support being revoked an operator of tokens");
     }
     //todo either use from param and remove from off chain, or require from param = encoded ata from param
-    require(_executeCall(address(this), 0, _userData)); // use operator as to param?
-    //todo jaycen fix hard-codes (right now its only possible to buy a crc with ID 0 in selectable mode)
-    //buy(from, 0, amount);
+    require(_executeCall(address(this), 0, _userData), "_executeCall failed"); // use operator as to param?
   }
 
   function createSale(

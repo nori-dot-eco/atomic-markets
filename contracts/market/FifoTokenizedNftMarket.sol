@@ -32,7 +32,7 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, IEIP777TokensOper
 
     uint256 newSaleAmount = _buy(_buyer, commodityIndex, _amount);
     if (newSaleAmount != 0) {
-      _split(commodityIndex, _buyer, _amount);
+      //_split(commodityIndex, _buyer, _amount);
     } else {
       _transfer(
         _buyer,
