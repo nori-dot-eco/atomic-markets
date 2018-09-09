@@ -110,6 +110,7 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
     );
   }
 
+
   function _executeCall(address to, uint256 value, bytes data) private returns (bool success) {
     assembly { // solium-disable-line security/no-inline-assembly
       success := call(gas, to, value, add(data, 0x20), mload(data), 0, 0)
