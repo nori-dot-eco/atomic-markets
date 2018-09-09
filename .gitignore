@@ -66,6 +66,7 @@ build
 
 # vscode
 workspace.code-workspace
+.vscode
 
 # truffle tmp files
 .node-xmlhttp*

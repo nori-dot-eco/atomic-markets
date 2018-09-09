@@ -2,7 +2,7 @@
 const getNamedAccounts = require('../helpers/getNamedAccounts');
 
 let fifoMarket, nft, token;
-
+// todo fix these
 const testFifoSaleBehavior = () => {
   contract(`FifoTokenizedCommodityMarket`, () => {
     beforeEach(async () => {

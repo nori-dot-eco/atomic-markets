@@ -2,18 +2,18 @@ pragma solidity ^0.4.24;
 
 
 interface ERC777Token {
-    function name() public constant returns (string);
-    function symbol() public constant returns (string);
-    function totalSupply() public constant returns (uint256);
-    function granularity() public constant returns (uint256);
-    function balanceOf(address owner) public constant returns (uint256);
+    function name() public view returns (string);
+    function symbol() public view returns (string);
+    function totalSupply() public view returns (uint256);
+    function granularity() public view returns (uint256);
+    function balanceOf(address owner) public view returns (uint256);
 
     function send(address to, uint256 amount) public;
     function send(address to, uint256 amount, bytes userData) public;
 
     function authorizeOperator(address operator) public;
     function revokeOperator(address operator) public;
-    function isOperatorFor(address operator, address tokenHolder) public constant returns (bool);
+    function isOperatorFor(address operator, address tokenHolder) public view returns (bool);
     function operatorSend(address from, address to, uint256 amount, bytes userData, bytes operatorData) public;
 
     event Sent(

@@ -3,7 +3,6 @@ import "./MarketLib.sol";
 import "../eip777/ERC777Token.sol";
 import "./Market.sol";
 import "../../node_modules/zeppelin-solidity/contracts//math/SafeMath.sol";
-import "../utils/ConversionUtils.sol";
 import "../../node_modules/zeppelin-solidity/contracts/token/ERC721/ERC721.sol";
 
 
