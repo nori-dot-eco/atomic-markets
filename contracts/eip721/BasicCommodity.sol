@@ -16,17 +16,17 @@ contract BasicCommodity is Ownable, ERC820Implementer, ICommodity, IMintableComm
 
   /*** EVENTS ***/
   event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
-  event AuthorizedOperator(address indexed operator, address indexed tokenHolder);
+  event AuthorizedOperator(address operator, address indexed tokenHolder);
   event RevokedOperator(address indexed operator, address indexed tokenHolder);
   /// @dev Transfer event as defined in current draft of ERC721. Emitted every time a commodity
   ///  ownership is assigned, including creations.
   event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
   event Send(
-    address indexed from,
-    address indexed to,
+    address  from,
+    address  to,
     uint256 tokenId,
     bytes userData,
-    address indexed operator,
+    address  operator,
     bytes operatorData
   );
   event Burnt(address indexed from, uint256 tokenId);

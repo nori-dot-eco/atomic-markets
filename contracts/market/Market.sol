@@ -22,7 +22,7 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
     owner = _owner;
     erc820Registry = ERC820Registry(0xa691627805d5FAE718381ED95E04d00E20a1fea6);
     preventTokenOperator = false;
-    setInterfaceImplementation("IEIP777TokensOperator", this);
+    setInterfaceImplementation("ERC777TokensOperator", this);
     preventCommodityOperator = false;
     setInterfaceImplementation("ICommodityOperator", this);
   }
@@ -41,7 +41,7 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
 
   function enableEIP777TokensOperator() public onlyOwner {
     preventTokenOperator = false;
-    setInterfaceImplementation("IEIP777TokensOperator", this);
+    setInterfaceImplementation("ERC777TokensOperator", this);
   }
 
   function enableCommodityOperator() public onlyOwner {
