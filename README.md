@@ -1,7 +1,7 @@
 Todo:
 
-- make sure web31 dependency inside eip820 submodule doesn't interfere with web3 < 1 in root
-- install directions (including for submodule)
+- make sure web3 1.0 dependency inside eip820 submodule doesn't interfere with web3 < 1 in root
+- install directions (including for submodule) `<-- maybe just use npm packages`
 - write tests + implementation for FIFO market
 - rename selectable to spot market?
 - use latest 777 contracts
@@ -10,6 +10,8 @@ Todo:
 - add truffle box config
 - modify buy/sell to be a generic "create order" so that tokens/nft orders can be added in any order (currently the contracts require creating the NFT sale, and then buying it with a token-- we can instead generalize and just add an order book that checks if there is a matching order upon invoking a function called `createOrder`)
 - resolve todo items within code
+- gitignore file
+- remaining tests for selectable market
 
 # Atomic Swap Marketplaces
 

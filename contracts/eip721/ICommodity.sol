@@ -35,7 +35,7 @@ interface ICommodity {
   event Approved(address indexed owner, address indexed approved, uint256 indexed tokenId);
   event Minted(address indexed to, uint256 amount, address indexed operator, bytes operatorData);
   event Burnt(address indexed from, uint256 amount);
-  event AuthorizedOperator(address indexed operator, address indexed tokenHolder);
+  event AuthorizedOperator(address operator, address indexed tokenHolder);
   event RevokedOperator(address indexed operator, address indexed tokenHolder);
   event Sent(
     address indexed from,
