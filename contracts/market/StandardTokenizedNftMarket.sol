@@ -10,8 +10,8 @@ import "../../node_modules/zeppelin-solidity/contracts/token/ERC721/ERC721.sol";
 contract StandardTokenizedNftMarket is Market {
   using SafeMath for uint256; //todo jaycen PRELAUNCH - make sure we use this EVERYWHERE its needed
 
-  /// @dev Reference to contract tracking commodity ownership
-  ERC721 public commodityContract; //todo rename this
+  /// @dev Reference to contract tracking NFT ownership
+  ERC721 public nft; //todo rename this
   /// @dev Reference to contract tracking token ownership
   ERC777Token public tokenContract;
 
@@ -19,16 +19,16 @@ contract StandardTokenizedNftMarket is Market {
 
   event SaleSuccessful(uint256 tokenId, uint256 value, address buyer);
   event SaleCreated(uint256 tokenId, uint64 category, uint32 saleType, address seller, uint256 value, bytes misc, uint64 startedAt);
-  event CommodityReceived(address sender);
+  event NFTReceived(address sender);
 
   constructor(address[] _marketItems, address _owner) Market(_marketItems, _owner) public {
-    setCommodityContract(_marketItems[0]);
+    setNFTContract(_marketItems[0]);
     setTokenContract(_marketItems[1]);
     // and delegate constructor
   }
 
-  function setCommodityContract (address _commodityContract) internal onlyOwner {
-    commodityContract = ERC721(_commodityContract); //todo is this the best way to do this
+  function setNFTContract (address _nftContract) internal onlyOwner {
+    nft = ERC721(_nftContract); //todo is this the best way to do this
   }
 
   function setTokenContract (address _tokenContract) internal onlyOwner {
@@ -51,14 +51,14 @@ contract StandardTokenizedNftMarket is Market {
   }
 
   /// @dev transfers buyers token to seller.
-  /// Does NOT transfer sellers commodity (token) to buyer
+  /// Does NOT transfer sellers NFT (token) to buyer
   function _buy(address _buyer, uint256 _tokenId, uint256 _amount) internal returns (uint256) {
     MarketLib.Sale storage sale = tokenIdToSell[_tokenId];
     require(_isOnSale(sale), "You can only buy a NFT that is currently on sale");
     require(_buyer != sale.seller, "You cannot buy your own NFT");
     require(
       _amount <= sale.value,
-      "You can only purchase a value of the current commodity that is <= its bundle value"
+      "You can only purchase a value of the current NFT that is <= its bundle value"
     );
 
     address seller = sale.seller;
@@ -105,7 +105,7 @@ contract StandardTokenizedNftMarket is Market {
     uint256 _value,
     bytes _misc
   ) internal {
-    require(commodityContract.getApproved(_tokenId) == address(this), "The market is not currently an operator for this commodity");
+    require(nft.getApproved(_tokenId) == address(this), "The market is not currently an operator for this NFT");
     MarketLib.Sale memory sale = MarketLib.Sale(
       uint256(_tokenId),
       uint64(_category),
@@ -118,7 +118,7 @@ contract StandardTokenizedNftMarket is Market {
     _addSale(_tokenId, sale);
   }
 
-  /// @dev Returns true if the commodity is on sale.
+  /// @dev Returns true if the NFT is on sale.
   /// @param _sale - sale to check.
   function _isOnSale(MarketLib.Sale storage _sale) internal view returns (bool) {
     return (_sale.startedAt > 0);
@@ -128,20 +128,20 @@ contract StandardTokenizedNftMarket is Market {
   /// @param _claimant - Address claiming to own the token.
   /// @param _tokenId - ID of token whose ownership to verify.
   function _owns(address _claimant, uint256 _tokenId) internal view returns (bool) {
-    return (commodityContract.ownerOf(_tokenId) == _claimant);
+    return (nft.ownerOf(_tokenId) == _claimant);
   }
 
   // todo jaycen via revokeOperator -- also do we need something similar if someone tries to auth tokens when no crc sales are available? Not sure ive tested for this
   /// @dev Removes a sale from the list of open sales.
-  /// @param _tokenId - ID of commodity on sale.
+  /// @param _tokenId - ID of NFT on sale.
   function _removeSale(uint256 _tokenId) internal {
-    require(commodityContract.getApproved(_tokenId) == address(this), "The market is not currently the operator for this value of tokens");
+    require(nft.getApproved(_tokenId) == address(this), "The market is not currently the operator for this value of tokens");
     delete tokenIdToSell[_tokenId];
   }
 
   // todo
   /// @dev Removes a sale from the list of open sales.
-  /// @param _tokenId - ID of commodity on sale.
+  /// @param _tokenId - ID of NFT on sale.
   function _updateSale(uint256 _tokenId, uint256 _amount) internal returns (uint256) {
     //todo jaycen only allow this to be called when the market invokes it (require it is less than original and > 0)
     uint256 newSaleValue = tokenIdToSell[_tokenId].value.sub(_amount);
@@ -149,9 +149,9 @@ contract StandardTokenizedNftMarket is Market {
     return newSaleValue;
   }
 
-  /// @dev Transfers an commodity owned by this contract to another address.
+  /// @dev Transfers an NFT owned by this contract to another address.
   ///  Returns true if the transfer succeeds.
-  /// @param _buyer - owner of the commodity to transfer from (via operator sending).
+  /// @param _buyer - owner of the NFT to transfer from (via operator sending).
   /// @param _tokenId - ID of token to transfer.
   function _transfer(
     address _buyer,
@@ -159,8 +159,8 @@ contract StandardTokenizedNftMarket is Market {
     uint256 _tokenId,
     uint256 // amount
   ) internal {
-    address seller = commodityContract.ownerOf(_tokenId);
-    commodityContract.safeTransferFrom(
+    address seller = nft.ownerOf(_tokenId);
+    nft.safeTransferFrom(
       seller,
       _buyer,
       _tokenId,

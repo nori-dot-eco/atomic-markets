@@ -1,4 +1,3 @@
-/* globals */
 const abi = require('ethereumjs-abi');
 
 const ExampleAdvancedToken = artifacts.require('ExampleAdvancedToken');
@@ -37,7 +36,7 @@ const testSelectableSaleBehavior = () => {
         admin
       );
       await token.mint(buyer, web3.toWei('100'), '');
-      await nft.minter(seller);
+      await nft.mintWithoutId(seller);
     });
 
     context('Create a NFT sale using authorizeOperator', () => {
