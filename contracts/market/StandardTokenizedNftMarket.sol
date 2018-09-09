@@ -63,13 +63,14 @@ contract StandardTokenizedNftMarket is Market {
 
     address seller = sale.seller;
 
+    //todo fix this (was initally written for the CRC)
     if (_amount == sale.value
     ) {
       _removeSale(_tokenId);
     } else if (_amount < sale.value && _amount > 0) {
       sale.value = _updateSale(_tokenId, _amount);
     } else {
-      //revert("Invalid value specification");
+      revert("Invalid value specification");
     }
 
     if (_amount > 0) {
@@ -82,7 +83,6 @@ contract StandardTokenizedNftMarket is Market {
 
       emit Buying(_buyer, seller);
       tokenContract.operatorSend(
-        //address(this),
         _buyer,
         seller,
         _amount,

@@ -10,6 +10,7 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
     // delegate constructor
   }
 
+  //todo, note, passing in buyer (as opposed to msg.sender) here is probaly not safe, look into this
   function buy(address _buyer, uint256 _tokenId, uint256 _amount) public {
     require(address(this) == msg.sender, "You can only call the buy function using callOperator on the token contract");
     _buy(_buyer, _tokenId, _amount);
@@ -32,25 +33,14 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
     bytes _userData,
     bytes
   ) public {
-    // uint256 price = ConversionUtils.bytesToUint(_userData);
-    //uint256 price = uint256(_userData);
-    // require(
-    //   address(commodityContract) == msg.sender,
-    //   "Only the commodity contract can use 'madeOperatorForCommodity'"
-    // );
-    // if (preventCommodityOperator) {
-    //   revert("This contract does not currently support being made an operator of commodities");
-    // }
+    require(
+      address(commodityContract) == msg.sender,
+      "Only the commodity contract can use 'madeOperatorForCommodity'"
+    );
+    if (preventCommodityOperator) {
+      revert("This contract does not currently support being made an operator of commodities");
+    }
     require(_executeCall(address(this), 0, _userData), "_executeCall failed"); // use operator as to param?
-    //todo jaycen can we figure out how to do this passing in a CommodityLib.Commodity struct (I was having solidity errors but it would be ideal)
-    // createSale(
-    //   tokenId,
-    //   1,
-    //   1,
-    //   from,
-    //   price,
-    //   ""
-    // );
   }
 
   /// @notice NOT IMPLEMENTED YET, BUT NEEDED FOR INTERFACE FULFILLMENT
@@ -95,13 +85,13 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
     bytes _userData,
     bytes
   ) public {
-    // require(
-    //   address(tokenContract) == msg.sender,
-    //   "Only the commodity contract can use 'madeOperatorForTokens'"
-    // );
-    // if (preventTokenOperator) {
-    //   revert("This contract does not currently support being revoked an operator of tokens");
-    // }
+    require(
+      address(tokenContract) == msg.sender,
+      "Only the commodity contract can use 'madeOperatorForTokens'"
+    );
+    if (preventTokenOperator) {
+      revert("This contract does not currently support being revoked an operator of tokens");
+    }
     //todo either use from param and remove from off chain, or require from param = encoded ata from param
     require(_executeCall(address(this), 0, _userData), "_executeCall failed"); // use operator as to param?
   }
@@ -113,7 +103,7 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
   ) public {
     _createSale(
       _tokenId,
-      uint64(0),
+      uint64(0), //todo fix these params to not be static
       uint32(0),
       _seller,
       _value,
