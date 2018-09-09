@@ -9,9 +9,7 @@ module.exports = (deployer, network, accounts) => {
       ExampleAdvancedToken,
       'Token',
       'sym',
-      1,
-      0,
-      accounts[0]
+      1
     );
     const nft = await deployer.deploy(ExampleNFT, 'NFT', 'nft', accounts[0]);
     await deployer.deploy(ConversionUtils);

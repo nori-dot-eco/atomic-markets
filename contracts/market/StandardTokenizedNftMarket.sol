@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 import "./MarketLib.sol";
-import "../eip777/IEIP777.sol";
+import "../eip777/ERC777Token.sol";
 import "../eip721/ICommodity.sol";
 import "./Market.sol";
 import "../../node_modules/zeppelin-solidity/contracts//math/SafeMath.sol";
@@ -13,11 +13,11 @@ contract StandardTokenizedNftMarket is Market {
   /// @dev Reference to contract tracking commodity ownership
   ICommodity public commodityContract;
   /// @dev Reference to contract tracking token ownership
-  IEIP777 public tokenContract;
+  ERC777Token public tokenContract;
 
-  mapping (uint256 => MarketLib.Sale) tokenIdToSell;
+  mapping (uint256 => MarketLib.Sale) public tokenIdToSell;
 
-  event SaleSuccessful(uint256 tokenId, uint256 value, address indexed buyer);
+  event SaleSuccessful(uint256 tokenId, uint256 value, address buyer);
   event SaleCreated(uint256 tokenId, uint64 category, uint32 saleType, address seller, uint256 value, bytes misc, uint64 startedAt);
   event CommodityReceived(address sender);
 
@@ -32,7 +32,7 @@ contract StandardTokenizedNftMarket is Market {
   }
 
   function setTokenContract (address _tokenContract) internal onlyOwner {
-    tokenContract = IEIP777(_tokenContract);
+    tokenContract = ERC777Token(_tokenContract);
   }
 
   function _addSale(uint256 _tokenId, MarketLib.Sale _sale) private {
@@ -44,7 +44,7 @@ contract StandardTokenizedNftMarket is Market {
       uint64(_sale.category),
       uint32(_sale.saleType),
       address(_sale.seller),
-      uint256(_sale.value),
+      _sale.value,
       bytes(_sale.misc),
       uint64(now) // solium-disable-line security/no-block-members
     );
@@ -63,7 +63,9 @@ contract StandardTokenizedNftMarket is Market {
 
     address seller = sale.seller;
 
-    if (_amount == sale.value) {
+    //todo fix this (was initally written for the CRC)
+    if (_amount == sale.value
+    ) {
       _removeSale(_tokenId);
     } else if (_amount < sale.value && _amount > 0) {
       sale.value = _updateSale(_tokenId, _amount);
@@ -79,8 +81,8 @@ contract StandardTokenizedNftMarket is Market {
       // uint256 marketCut = _computeCut(_amount);
       // uint256 sellerProceeds = sale.value - marketCut;
 
+      emit Buying(_buyer, seller);
       tokenContract.operatorSend(
-        this,
         _buyer,
         seller,
         _amount,
@@ -93,6 +95,7 @@ contract StandardTokenizedNftMarket is Market {
 
     return sale.value;
   }
+  event Buying(address buyer, address seller);
 
   function _createSale(
     uint256 _tokenId,

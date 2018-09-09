@@ -10,15 +10,11 @@ contract ExampleAdvancedToken is EIP777TokenBase {
   constructor(
     string _name,
     string _symbol,
-    uint256 _granularity,
-    uint256 _totalSupply,
-    address _owner
+    uint256 _granularity
   ) EIP777TokenBase(
     _name,
     _symbol,
-    _granularity,
-    _totalSupply,
-    _owner
+    _granularity
   ) public {
     /*Delegate constructor*/
   }

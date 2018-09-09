@@ -15,6 +15,13 @@ function encodeCall(name, _arguments, values) {
 const buy = (from, id, value) =>
   encodeCall('buy', ['address', 'uint256', 'uint256'], [from, id, value]);
 
+const sell = (from, id, value) =>
+  encodeCall(
+    'createSale',
+    ['address', 'uint256', 'uint256'],
+    [from, id, value]
+  );
+
 let selectableMarket, nft, token, admin, buyer, seller;
 
 const testSelectableSaleBehavior = () => {
@@ -23,9 +30,12 @@ const testSelectableSaleBehavior = () => {
       ({ buyer0: buyer, seller0: seller, admin0: admin } = getNamedAccounts(
         web3
       ));
-      token = await ExampleAdvancedToken.deployed();
-      nft = await ExampleNFT.deployed();
-      selectableMarket = await SelectableMarketplace.deployed();
+      token = await ExampleAdvancedToken.new('Token', 'sym', 1);
+      nft = await ExampleNFT.new('NFT', 'nft', admin);
+      selectableMarket = await SelectableMarketplace.new(
+        [nft.address, token.address],
+        admin
+      );
       await token.mint(buyer, web3.toWei('100'), '');
       await nft.mint(seller, '', web3.toWei('100'), '');
     });
@@ -33,9 +43,14 @@ const testSelectableSaleBehavior = () => {
     context('Create a NFT sale using authorizeOperator', () => {
       describe('ExampleNFT.authorizeOperator', () => {
         it('should create an NFT sale listing in the market', async () => {
-          await nft.authorizeOperator(selectableMarket.address, 0, '100', {
-            from: seller,
-          });
+          await nft.authorizeOperator(
+            selectableMarket.address,
+            0,
+            sell(seller, 0, 100),
+            {
+              from: seller,
+            }
+          );
         });
       });
     });
@@ -45,7 +60,7 @@ const testSelectableSaleBehavior = () => {
         await nft.authorizeOperator(
           selectableMarket.address,
           0,
-          web3.fromAscii(web3.toWei('100')),
+          sell(seller, 0, web3.toWei('100')),
           {
             from: seller,
           }
@@ -63,7 +78,19 @@ const testSelectableSaleBehavior = () => {
             }
           );
           nftOwner = await nft.ownerOf(0);
-          assert.equal(nftOwner, buyer);
+          const buyerTokenBalance = await token.balanceOf(buyer);
+          const sellerTokenBalance = await token.balanceOf(seller);
+          assert.equal(
+            buyerTokenBalance.toString(),
+            0,
+            'buyer did not spend the tokens'
+          );
+          assert.equal(
+            sellerTokenBalance.toString(),
+            web3.toWei('100'),
+            'seller did not receive the tokens'
+          );
+          assert.equal(nftOwner, buyer, 'The buyer does not own the NFT');
         });
       });
     });
