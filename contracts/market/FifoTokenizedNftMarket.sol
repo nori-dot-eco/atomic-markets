@@ -1,25 +1,24 @@
 pragma solidity ^0.4.24;
 import "./StandardTokenizedNftMarket.sol";
 import "../eip777/ERC777TokensOperator.sol";
-import "../eip721/ICommodityOperator.sol";
+import "../eip721/IERC721Operator.sol";
 import "../../node_modules/zeppelin-solidity/contracts//math/SafeMath.sol";
 
 
-contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOperator, ICommodityOperator {
+contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOperator, IERC721Operator {
   using SafeMath for uint256;
 
-  int[] public commoditiesForSale;
+  int[] public nftsForSale;
 
   constructor(address[] _marketItems, address _owner) StandardTokenizedNftMarket(_marketItems, _owner) public {
     // delegate constructor
   }
 
-
   function getEarliestSale() public view returns (uint, uint) {
-    if (commoditiesForSale.length >= 0) {
-      for (uint i = 0; i < commoditiesForSale.length; i = i.add(1) ){
-        if (commoditiesForSale[i] >= 0) {
-          return (uint(commoditiesForSale[i]), i);
+    if (nftsForSale.length >= 0) {
+      for (uint i = 0; i < nftsForSale.length; i = i.add(1) ){
+        if (nftsForSale[i] >= 0) {
+          return (uint(nftsForSale[i]), i);
         }
       }
     }
@@ -28,33 +27,32 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
   }
 
   function buy(address _buyer, uint256 _amount) private {
-    var (commodityIndex, saleIndex) = getEarliestSale();
+    var (nftIndex, saleIndex) = getEarliestSale();
 
-    uint256 newSaleAmount = _buy(_buyer, commodityIndex, _amount);
+    uint256 newSaleAmount = _buy(_buyer, nftIndex, _amount);
     if (newSaleAmount != 0) {
-      //_split(commodityIndex, _buyer, _amount);
+      //_split(nftIndex, _buyer, _amount);
     } else {
       _transfer(
         _buyer,
         msg.sender,
-        commodityIndex,
+        nftIndex,
         _amount
       );
-      commoditiesForSale[saleIndex] = -1;
+      nftsForSale[saleIndex] = -1;
     }
-
   }
 
   /// @notice This function is called by the CRC contract when this contract
-  /// is given authorization to send a particular commodity. When such happens,
+  /// is given authorization to send a particular NFT. When such happens,
   /// a sale for the CRC is created and added to the bottom of the FIFO queue
   /// @param tokenId the crc to remove from the FIFO sale queue
   /// @param from the owner of the crc, and the sale proceed recipient
   /// @param value the number of crcs in a bundle to list for sale
   /// @param userData data passed by the user
   /// @dev this function uses erc820 introspection : handler invoked when
-  /// this contract is made an operator for a commodity
-  function madeOperatorForCommodity(
+  /// this contract is made an operator for a NFT
+  function madeOperatorForNFT(
     address, // operator,
     address from,
     address, // to,
@@ -64,17 +62,15 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
     bytes // operatorData
   ) public {
     require(
-      address(commodityContract) == msg.sender,
-      "Only the commodity contract can invoke 'madeOperatorForCommodity'"
+      address(nft) == msg.sender,
+      "Only the NFT contract can invoke 'madeOperatorForNFT'"
     );
-    if (preventCommodityOperator) {
-      revert("This contract does not currently allow being made the operator of commodities");
+    if (preventNFTOperator) {
+      revert("This contract does not currently allow being made the operator of NFTs");
     }
-    //todo create the ability to list a new sale of a fractional value of the CRC by using the split function
-    //todo jaycen can we figure out how to do this passing in a CommodityLib.Commodity struct (I was having solidity errors but it would be ideal -- might be possible using eternal storage, passing hash of struct and then looking up struct values <-- would be VERY cool)
     createSale(
       tokenId,
-      1,
+      1,//todo remove hard-code
       2,
       from,
       value,
@@ -83,16 +79,16 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
   }
 
   /// @notice This function is called by the CRC contract when this contract
-  /// has lost authorization for a particular commodity. Since authorizations are
+  /// has lost authorization for a particular NFT. Since authorizations are
   /// what create the sale listings, is the market later loses authorization,
   /// then it needs to remove the sale from the queue (failure to do so would result in the
   /// market not being able to distribute CRCs to the buyer). Since there is also no way to
   /// Modify the queue, it is adamant that the CRC is removed from
   /// the queue or the result will be a broken market.
   /// @dev this function uses erc820 introspection : handler invoked when
-  /// this contract is revoked an operator for a commodity
+  /// this contract is revoked an operator for a NFT
   /// @param tokenId the crc to remove from the FIFO sale queue
-  function revokedOperatorForCommodity(
+  function revokedOperatorForNFT(
     address, // operator,
     address, // from,
     address, // to,
@@ -102,13 +98,12 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
     bytes // operatorData
   ) public {
     require(
-      address(commodityContract) == msg.sender,
-      "Only the commodity contract can invoke 'revokedOperatorForCommodity'"
+      address(nft) == msg.sender,
+      "Only the NFT contract can invoke 'revokedOperatorForNFT'"
     );
-    if (preventCommodityOperator) {
-      revert("This contract does not currently allow being revoked the operator of commodities");
+    if (preventNFTOperator) {
+      revert("This contract does not currently allow being revoked the operator of NFTs");
     }
-    //todo jaycen can we figure out how to do this passing in a CommodityLib.Commodity struct (I was having solidity errors but it would be ideal -- might be possible using eternal storage, passing hash of struct and then looking up struct values <-- would be VERY cool)
     removeSale(tokenId);
   }
 
@@ -145,14 +140,14 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
       _value,
       _misc
     );
-    commoditiesForSale.push(int(_tokenId));
+    nftsForSale.push(int(_tokenId)); //todo nftsforsale
   }
 
   function removeSale(uint256 _tokenId) private { //todo onlyThisContract modifier
     _removeSale(_tokenId);
-    for (uint i = 0; i < commoditiesForSale.length; i++ ) {
-      if (uint(commoditiesForSale[i]) == _tokenId) {
-        commoditiesForSale[i] = -1;
+    for (uint i = 0; i < nftsForSale.length; i++ ) {
+      if (uint(nftsForSale[i]) == _tokenId) {
+        nftsForSale[i] = -1;
         return;
       }
     }

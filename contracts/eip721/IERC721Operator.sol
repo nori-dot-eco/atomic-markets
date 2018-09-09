@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-interface ICommodityOperator {
-  function madeOperatorForCommodity(
+interface IERC721Operator {
+  function madeOperatorForNFT(
     address operator,
     address from,
     address to,
@@ -11,7 +11,7 @@ interface ICommodityOperator {
     bytes operatorData
   ) public;
 
-  function revokedOperatorForCommodity(
+  function revokedOperatorForNFT(
     address operator,
     address from,
     address to,

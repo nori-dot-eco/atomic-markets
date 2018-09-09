@@ -12,8 +12,8 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
   MarketLib.Market[] public marketItems;
   bool internal preventTokenReceived = true;
   bool internal preventTokenOperator = true;
-  bool internal preventCommodityReceived = true;
-  bool internal preventCommodityOperator = true;
+  bool internal preventNFTReceived = true;
+  bool internal preventNFTOperator = true;
 
   constructor(address[] _marketItems, address _owner) public {
     for (uint i = 0;  i < _marketItems.length; i = i.add(1)) {
@@ -23,8 +23,8 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
     erc820Registry = ERC820Registry(0xa691627805d5FAE718381ED95E04d00E20a1fea6);
     preventTokenOperator = false;
     setInterfaceImplementation("ERC777TokensOperator", this);
-    preventCommodityOperator = false;
-    setInterfaceImplementation("ICommodityOperator", this);
+    preventNFTOperator = false;
+    setInterfaceImplementation("IERC721Operator", this);
   }
 
   //todo remove?
@@ -44,8 +44,8 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
     setInterfaceImplementation("ERC777TokensOperator", this);
   }
 
-  function enableCommodityOperator() public onlyOwner {
-    preventCommodityOperator = false;
-    setInterfaceImplementation("ICommodityOperator", this);
+  function enableNFTOperator() public onlyOwner {
+    preventNFTOperator = false;
+    setInterfaceImplementation("IERC721Operator", this);
   }
 }

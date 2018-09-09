@@ -1,13 +1,13 @@
 pragma solidity ^0.4.24;
-import "../eip721/BasicCommodity.sol";
+import "../eip721/AdvancedNFTBase.sol";
 
-contract ExampleNFT is BasicCommodity {
+contract ExampleNFT is AdvancedNFTBase {
 
   constructor(
     string _name,
     string _symbol,
     address _owner
-  ) public BasicCommodity (
+  ) public AdvancedNFTBase (
     _name,
     _symbol,
     _owner

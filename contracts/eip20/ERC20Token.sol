@@ -17,7 +17,6 @@ interface ERC20Token {
     function approve(address spender, uint256 amount) public returns (bool);
     function allowance(address owner, address spender) public constant returns (uint256);
 
-    // solhint-disable-next-line no-simple-event-func-name
     event Transfer(address indexed from, address indexed to, uint256 amount);
     event Approval(address indexed owner, address indexed spender, uint256 amount);
 }

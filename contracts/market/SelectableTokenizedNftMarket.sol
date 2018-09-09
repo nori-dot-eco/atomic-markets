@@ -1,10 +1,10 @@
 pragma solidity ^0.4.24;
 import "./StandardTokenizedNftMarket.sol";
 import "../eip777/ERC777TokensOperator.sol";
-import "../eip721/ICommodityOperator.sol";
+import "../eip721/IERC721Operator.sol";
 
 
-contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOperator, ICommodityOperator {
+contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOperator, IERC721Operator {
 
   constructor(address[] _marketItems, address _owner) StandardTokenizedNftMarket(_marketItems, _owner) public {
     // delegate constructor
@@ -23,8 +23,8 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
   }
 
   /// @dev erc820 introspection : handler invoked when
-  /// this contract is made an operator for a commodity
-  function madeOperatorForCommodity(
+  /// this contract is made an operator for a NFT
+  function madeOperatorForNFT(
     address,
     address from,
     address,
@@ -34,10 +34,10 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
     bytes
   ) public {
     require(
-      address(commodityContract) == msg.sender,
-      "Only the commodity contract can use 'madeOperatorForCommodity'"
+      address(nft) == msg.sender,
+      "Only the NFT contract can use 'madeOperatorForNFT'"
     );
-    if (preventCommodityOperator) {
+    if (preventNFTOperator) {
       revert("This contract does not currently support being made an operator of commodities");
     }
     require(_executeCall(address(this), 0, _userData), "_executeCall failed"); // use operator as to param?
@@ -45,16 +45,16 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
 
   /// @notice NOT IMPLEMENTED YET, BUT NEEDED FOR INTERFACE FULFILLMENT
   /// This function is called by the CRC contract when this contract
-  /// has lost authorization for a particular commodity. Since authorizations are
+  /// has lost authorization for a particular NFT. Since authorizations are
   /// what create the sale listings, is the market later loses authorization,
   /// then it needs to remove the sale from the queue (failure to do so would result in the
   /// market not being able to distribute CRCs to the buyer). Since there is also no way to
   /// Modify the queue, it is adamant that the CRC is removed from
   /// the queue or the result will be a broken market.
   /// @dev this function uses erc820 introspection : handler invoked when
-  /// this contract is revoked an operator for a commodity
+  /// this contract is revoked an operator for a NFT
   /// @param tokenId the crc to remove from the FIFO sale queue
-  function revokedOperatorForCommodity(
+  function revokedOperatorForNFT(
     address, // operator,
     address, // from,
     address, // to,
@@ -64,13 +64,12 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
     bytes // operatorData
   ) public {
     require(
-      address(commodityContract) == msg.sender,
-      "Only the commodity contract can use 'revokedOperatorForCommodity'"
+      address(nft) == msg.sender,
+      "Only the NFT contract can use 'revokedOperatorForNFT'"
     );
-    if (preventCommodityOperator) {
-      revert("This contract does not currently support being revoked an operator of commodities");
+    if (preventNFTOperator) {
+      revert("This contract does not currently support being revoked an operator of NFTs");
     }
-    //todo jaycen can we figure out how to do this passing in a CommodityLib.Commodity struct (I was having solidity errors but it would be ideal -- might be possible using eternal storage, passing hash of struct and then looking up struct values <-- would be VERY cool)
     //removeSale(tokenId);
   }
 
@@ -87,7 +86,7 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
   ) public {
     require(
       address(tokenContract) == msg.sender,
-      "Only the commodity contract can use 'madeOperatorForTokens'"
+      "Only the token contract can use 'madeOperatorForTokens'"
     );
     if (preventTokenOperator) {
       revert("This contract does not currently support being revoked an operator of tokens");
