@@ -1,7 +1,7 @@
 const ExampleAdvancedToken = artifacts.require('ExampleAdvancedToken');
 const ExampleNFT = artifacts.require('ExampleNFT');
 const SelectableMarketplace = artifacts.require('SelectableMarketplace');
-// todo use getnamed accounts
+// todo use getNamed accounts
 module.exports = (deployer, network, accounts) => {
   deployer.then(async () => {
     const token = await deployer.deploy(
