@@ -106,24 +106,6 @@ contract SelectableTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
     require(_executeCall(address(this), 0, _userData), "_executeCall failed"); // use operator as to param?
   }
 
-  // function createSale(
-  //   uint256 _tokenId,
-  //   uint64 _category,
-  //   uint32 _saleType,
-  //   address _seller,
-  //   uint256 _value,
-  //   bytes _misc
-  // ) public {
-  //   _createSale(
-  //     _tokenId,
-  //     _category,
-  //     _saleType,
-  //     _seller,
-  //     _value,
-  //     _misc
-  //   );
-  // }
-
   function createSale(
     address _seller,
     uint256 _tokenId,
