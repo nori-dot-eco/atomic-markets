@@ -1,4 +1,4 @@
-/* globals network */
+/* globals */
 const abi = require('ethereumjs-abi');
 
 const ExampleAdvancedToken = artifacts.require('ExampleAdvancedToken');
@@ -23,7 +23,7 @@ const sell = (from, id, value) =>
   );
 
 let selectableMarket, nft, token, admin, buyer, seller;
-
+// todo rename fie (currently "crc" market)
 const testSelectableSaleBehavior = () => {
   contract(`FifoTokenizedCommodityMarket`, () => {
     beforeEach(async () => {
@@ -37,13 +37,13 @@ const testSelectableSaleBehavior = () => {
         admin
       );
       await token.mint(buyer, web3.toWei('100'), '');
-      await nft.mint(seller, '', web3.toWei('100'), '');
+      await nft.minter(seller);
     });
 
     context('Create a NFT sale using authorizeOperator', () => {
       describe('ExampleNFT.authorizeOperator', () => {
         it('should create an NFT sale listing in the market', async () => {
-          await nft.authorizeOperator(
+          await nft.approveAndCall(
             selectableMarket.address,
             0,
             sell(seller, 0, 100),
@@ -51,13 +51,14 @@ const testSelectableSaleBehavior = () => {
               from: seller,
             }
           );
+          // todo assert
         });
       });
     });
 
     context('Create a NFT sale and then buy using tokens', () => {
       beforeEach(async () => {
-        await nft.authorizeOperator(
+        await nft.approveAndCall(
           selectableMarket.address,
           0,
           sell(seller, 0, web3.toWei('100')),

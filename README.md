@@ -1,5 +1,6 @@
 Todo:
 
+- remove npm version of open-zeppelin
 - make sure web3 1.0 dependency inside eip820 submodule doesn't interfere with web3 < 1 in root
 - install directions (including for submodule) `<-- maybe just use npm packages`
 - write tests + implementation for FIFO market

@@ -1,17 +1,17 @@
 pragma solidity ^0.4.24;
 import "./MarketLib.sol";
 import "../eip777/ERC777Token.sol";
-import "../eip721/ICommodity.sol";
 import "./Market.sol";
 import "../../node_modules/zeppelin-solidity/contracts//math/SafeMath.sol";
 import "../utils/ConversionUtils.sol";
+import "../../node_modules/zeppelin-solidity/contracts/token/ERC721/ERC721.sol";
 
 
 contract StandardTokenizedNftMarket is Market {
   using SafeMath for uint256; //todo jaycen PRELAUNCH - make sure we use this EVERYWHERE its needed
 
   /// @dev Reference to contract tracking commodity ownership
-  ICommodity public commodityContract;
+  ERC721 public commodityContract; //todo rename this
   /// @dev Reference to contract tracking token ownership
   ERC777Token public tokenContract;
 
@@ -28,7 +28,7 @@ contract StandardTokenizedNftMarket is Market {
   }
 
   function setCommodityContract (address _commodityContract) internal onlyOwner {
-    commodityContract = ICommodity(_commodityContract);
+    commodityContract = ERC721(_commodityContract); //todo is this the best way to do this
   }
 
   function setTokenContract (address _tokenContract) internal onlyOwner {
@@ -63,7 +63,7 @@ contract StandardTokenizedNftMarket is Market {
 
     address seller = sale.seller;
 
-    //todo fix this (was initally written for the CRC)
+    //todo fix this (was initially written for the CRC)
     if (_amount == sale.value
     ) {
       _removeSale(_tokenId);
@@ -105,7 +105,7 @@ contract StandardTokenizedNftMarket is Market {
     uint256 _value,
     bytes _misc
   ) internal {
-    require(commodityContract.isOperatorForOne(this, _tokenId), "The market is not currently an operator for this commodity");
+    require(commodityContract.getApproved(_tokenId) == address(this), "The market is not currently an operator for this commodity");
     MarketLib.Sale memory sale = MarketLib.Sale(
       uint256(_tokenId),
       uint64(_category),
@@ -135,7 +135,7 @@ contract StandardTokenizedNftMarket is Market {
   /// @dev Removes a sale from the list of open sales.
   /// @param _tokenId - ID of commodity on sale.
   function _removeSale(uint256 _tokenId) internal {
-    require(commodityContract.isOperatorForOne(this, _tokenId), "The market is not currently the operator for this value of tokens");
+    require(commodityContract.getApproved(_tokenId) == address(this), "The market is not currently the operator for this value of tokens");
     delete tokenIdToSell[_tokenId];
   }
 
@@ -160,11 +160,10 @@ contract StandardTokenizedNftMarket is Market {
     uint256 // amount
   ) internal {
     address seller = commodityContract.ownerOf(_tokenId);
-    commodityContract.operatorSendOne(
+    commodityContract.safeTransferFrom(
       seller,
       _buyer,
       _tokenId,
-      "0x0",
       "0x0"
     );
   }

@@ -2461,6 +2461,10 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
+"openzeppelin-solidity@git+https://github.com/OpenZeppelin/openzeppelin-solidity.git":
+  version "1.12.0"
+  resolved "git+https://github.com/OpenZeppelin/openzeppelin-solidity.git#0b8296e52596db8ef97f313fe3507cac8fbbcde3"
+
 optionator@^0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/optionator/-/optionator-0.8.2.tgz#364c5e409d3f4d6301d6c0b4c05bba50180aeb64"
