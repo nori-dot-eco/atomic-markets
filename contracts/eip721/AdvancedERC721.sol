@@ -4,15 +4,13 @@ import "./ICommodityRecipient.sol";
 import "./IERC721Operator.sol";
 import "./ICommoditySender.sol";
 import "../eip820/contracts/ERC820Implementer.sol";
-// import "../../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
-// import "./ICommodity.sol"; //todo Iadvancedtoken
 import "../../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721Mintable.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721Pausable.sol";
 
 
 //todo rename to AdvancedERC721
-contract AdvancedNFTBase is ERC721Mintable, ERC721Pausable, ERC820Implementer {
-  using SafeMath for uint256; //todo jaycen PRELAUNCH - make sure we use this EVERYWHERE its needed
+contract AdvancedERC721 is ERC721Mintable, ERC721Pausable, ERC820Implementer {
+  using SafeMath for uint256;
 
   /*** EVENTS ***/
   event AuthorizedOperator(address operator, address indexed tokenHolder); //todo rename
