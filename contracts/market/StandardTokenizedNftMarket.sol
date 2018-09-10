@@ -16,7 +16,7 @@ contract StandardTokenizedNftMarket is Market {
 
   mapping (uint256 => MarketLib.Sale) public nftIdToSell;
 
-  event SaleSuccessful(uint256 nftId, uint256 value, address buyer);
+  event SaleSuccessful(uint256 nftId, uint256 sellersProfit, address buyer, address owner, uint256 ownersProfit);
   event SaleCreated(uint256 nftId, address seller, uint256 value, uint64 startedAt);
   event NFTReceived(address sender);
 
@@ -35,9 +35,7 @@ contract StandardTokenizedNftMarket is Market {
   }
 
   function _addSale(uint256 _nftId, MarketLib.Sale _sale) private {
-
     nftIdToSell[_nftId] = _sale;
-
     emit SaleCreated(
       _nftId,
       address(_sale.seller),
@@ -58,27 +56,39 @@ contract StandardTokenizedNftMarket is Market {
     );
 
     address seller = sale.seller;
+    uint256 sellersProfit = sale.value;
+    uint256 ownersProfit;
+
     if (_amount == sale.value) {
       _removeSale(_nftId);
     } else {
       revert("Invalid value specification");
     }
 
-    if (_amount > 0) {
-      // todo add market fee taking logic
-      //  Calculate the seller's cut.
-      // (NOTE: _computeCut() is guaranteed to return a
-      //  number <= _amount, so this subtraction can't go negative.)
-      // uint256 marketCut = _computeCut(_amount);
-      // uint256 sellerProceeds = sale.value - marketCut;
+    if (sellersProfit > 0) {
+      ownersProfit = _calculateOwnerCut(sellersProfit);
+      sellersProfit = sellersProfit.sub(ownersProfit);
 
       tokenContract.transferFrom( // although you can also do this with operatorSend, it's safer to use an allowance
         _buyer,
         seller,
-        _amount
+        sellersProfit
       );
+      tokenContract.transferFrom( // although you can also do this with operatorSend, it's safer to use an allowance
+        _buyer,
+        owner(),
+        ownersProfit
+      );
+    } else {
+      revert("Sale was unsuccessful: Invalid price");
     }
-    emit SaleSuccessful(_nftId, _amount, _buyer);
+    emit SaleSuccessful(
+      _nftId,
+      sellersProfit,
+      _buyer,
+      owner(),
+      ownersProfit
+    );
     return sale.value;
   }
 
@@ -134,6 +144,10 @@ contract StandardTokenizedNftMarket is Market {
       _nftId,
       "0x0"
     );
+  }
+
+  function _calculateOwnerCut(uint256 _saleAmount) internal view returns(uint256) {
+    return _saleAmount.mul(ownersCut).div(100);
   }
 
   function getSalePrice(uint256 _nftId) public view returns (uint) {
