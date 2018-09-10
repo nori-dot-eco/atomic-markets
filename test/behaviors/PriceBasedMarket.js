@@ -41,7 +41,7 @@ const testPriceBasedSaleBehavior = () => {
 
     context('Create a NFT sale using approveAndCall', () => {
       describe('ExampleNFT.approveAndCall', () => {
-        it('should create an NFT sale listing in the market', async () => {
+        it('should create an NFT sale, effectively listing in the market', async () => {
           await nft.approveAndCall(
             priceBasedMarket.address,
             0,
@@ -116,7 +116,7 @@ const testPriceBasedSaleBehavior = () => {
         });
       });
       describe('ExampleAdvancedToken.clearApprovalAndCall', () => {
-        it('should purchase the NFT for sale', async () => {
+        it('should cancel a NFT sale after having listed it', async () => {
           let nftOwner = await nft.ownerOf(0);
           let salePrice = await priceBasedMarket.getSalePrice(0);
           let approved = await nft.getApproved(0);
