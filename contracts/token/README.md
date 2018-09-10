@@ -46,8 +46,9 @@ const createSale = (id, from, value) =>
 
 // ...
 
-await nft.authorizeOperator(
+await nft.approveAndCall(
   fioTokenizedCommodityMarket.address,
+  100,
   0,
   createSale(0, getNamedAccounts(web3).seller0, 100),
   {

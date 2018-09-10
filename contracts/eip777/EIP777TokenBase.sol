@@ -93,20 +93,25 @@ contract EIP777TokenBase is Ownable, ERC20Token, ERC777Token, ERC820Implementer 
     emit AuthorizedOperator(_operator, msg.sender);
   }
 
-  //todo note that his was added to standard
-  /// @notice Authorize a third party `_operator` to manage (send) `msg.sender`'s tokens.
-  /// @param _operator The operator that wants to be Authorized
-  function authorizeOperator(address _operator, bytes _userData) public {
-    authorizeOperator(_operator);
+  //todo put into extended function contract
+  /// @notice Extended ERC777 function
+  ///  `msg.sender` approves `_spender` to spend `_amount` tokens on its behalf.
+  /// @param _operator (AKA spender)The address of the account able to transfer the tokens
+  /// @param _amount The number of tokens to be approved for transfer
+  /// @param _userData data to be passed from the user to the operator/spender for use/execution
+  /// @return `true`, if the approve can't be done, it should fail.
+  function approveAndCall(address _operator, uint256 _amount, bytes _userData) public returns (bool success) {
+    approve(_operator, _amount);
     callOperator(
       _operator,
       msg.sender,
       _operator,
-      0, //todo <-sanity check this
+      _amount,
       _userData,
       "0x0",
       false
     );
+    return true;
   }
 
   /// @notice Revoke a third party `_operator`'s rights to manage (send) `msg.sender`'s tokens.
