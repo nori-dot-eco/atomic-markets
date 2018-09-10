@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
-import "../eip820/contracts/ERC820Implementer.sol";
-import "../eip820/contracts/ERC820ImplementerInterface.sol";
+import "../../node_modules/eip820/contracts/ERC820Implementer.sol";
+import "../../node_modules/eip820/contracts/ERC820ImplementerInterface.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
