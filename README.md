@@ -1,6 +1,8 @@
 # Atomic Swap Marketplaces
 
-### **The smart contracts contained herein will allow you to create a marketplace for the swapping of Ethereum non-fungible tokens(NFT) and advanced tokens.**
+## **Everything you need to quickly jump in and begin swapping non-fungible tokens for other tokens using Ethereum smart contacts**
+
+---
 
 ## Quick Start
 
