@@ -116,7 +116,6 @@ contract StandardTokenizedNftMarket is Market {
   /// @dev Removes a sale from the list of open sales.
   /// @param _nftId - ID of NFT on sale.
   function _removeSale(uint256 _nftId) internal {
-    require(nft.getApproved(_nftId) == address(this), "The market is not currently the operator for this value of tokens");
     delete nftIdToSell[_nftId];
   }
 
