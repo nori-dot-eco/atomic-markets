@@ -282,13 +282,11 @@ contract AdvancedERC721 is ERC721Mintable, ERC721Pausable, ERC820Implementer {
       msg.sender,
       _operator,
       _tokenId,
-      0, //todo allow for fractional values to be passed by using the split function
+      0, // this will be used in a future version
       _data,
       "",
       false
     );
-    emit AuthorizedOperator(_operator, msg.sender);
-
   }
 
   //todo fix this

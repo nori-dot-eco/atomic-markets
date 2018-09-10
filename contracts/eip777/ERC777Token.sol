@@ -23,10 +23,14 @@ interface ERC777Token {
         uint256 amount,
         bytes userData,
         bytes operatorData
-    ); // solhint-disable-next-line separate-by-one-line-in-contract
+    );
     event Minted(address indexed operator, address indexed to, uint256 amount, bytes operatorData);
     event Burned(address indexed operator, address indexed from, uint256 amount, bytes userData, bytes operatorData);
     event AuthorizedOperator(address operator, address indexed tokenHolder);
     event RevokedOperator(address indexed operator, address indexed tokenHolder);
+
+
+    //note, I copied over this function definition from the erc20 interface so it can be more obviously demonstrated in the market contract
+    function transferFrom(address from, address to, uint256 amount) public returns (bool);
 
 }

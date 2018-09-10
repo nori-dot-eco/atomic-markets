@@ -2,7 +2,7 @@ const abi = require('ethereumjs-abi');
 
 const ExampleAdvancedToken = artifacts.require('ExampleAdvancedToken');
 const ExampleNFT = artifacts.require('ExampleNFT');
-const SelectableMarketplace = artifacts.require('SelectableMarketplace');
+const PriceBasedMarketplace = artifacts.require('PriceBasedMarketplace');
 const getNamedAccounts = require('../helpers/getNamedAccounts');
 
 function encodeCall(name, _arguments, values) {
@@ -21,44 +21,46 @@ const sell = (from, id, value) =>
     [from, id, value]
   );
 
-let selectableMarket, nft, token, admin, buyer, seller;
-// todo rename fie (currently "crc" market)
-const testSelectableSaleBehavior = () => {
-  contract(`FifoTokenizedCommodityMarket`, () => {
+let priceBasedMarket, nft, token, admin, buyer, seller;
+const testPriceBasedSaleBehavior = () => {
+  contract(`PriceBasedMarket`, () => {
     beforeEach(async () => {
       ({ buyer0: buyer, seller0: seller, admin0: admin } = getNamedAccounts(
         web3
       ));
       token = await ExampleAdvancedToken.new('Token', 'sym', 1);
       nft = await ExampleNFT.new('NFT', 'nft', admin);
-      selectableMarket = await SelectableMarketplace.new(
-        [nft.address, token.address],
+      priceBasedMarket = await PriceBasedMarketplace.new(
+        nft.address,
+        token.address,
         admin
       );
       await token.mint(buyer, web3.toWei('100'), '');
       await nft.mintWithoutId(seller);
     });
 
-    context('Create a NFT sale using authorizeOperator', () => {
-      describe('ExampleNFT.authorizeOperator', () => {
+    context('Create a NFT sale using approveAndCall', () => {
+      describe('ExampleNFT.approveAndCall', () => {
         it('should create an NFT sale listing in the market', async () => {
           await nft.approveAndCall(
-            selectableMarket.address,
+            priceBasedMarket.address,
             0,
             sell(seller, 0, 100),
             {
               from: seller,
             }
           );
-          // todo assert
+          const nftOwner = await nft.ownerOf(0);
+          assert.equal(nftOwner, seller);
         });
       });
     });
 
     context('Create a NFT sale and then buy using tokens', () => {
       beforeEach(async () => {
+        console.log(sell(seller, 0, web3.toWei('100')));
         await nft.approveAndCall(
-          selectableMarket.address,
+          priceBasedMarket.address,
           0,
           sell(seller, 0, web3.toWei('100')),
           {
@@ -66,12 +68,13 @@ const testSelectableSaleBehavior = () => {
           }
         );
       });
-      describe('ExampleAdvancedToken.authorizeOperator', () => {
+      describe('ExampleAdvancedToken.approveAndCall', () => {
         it('should purchase the NFT for sale', async () => {
           let nftOwner = await nft.ownerOf(0);
           assert.equal(nftOwner, seller);
-          await token.authorizeOperator(
-            selectableMarket.address,
+          await token.approveAndCall(
+            priceBasedMarket.address,
+            web3.toWei('100'),
             buy(buyer, 0, web3.toWei('100')),
             {
               from: buyer,
@@ -98,5 +101,5 @@ const testSelectableSaleBehavior = () => {
 };
 
 module.exports = {
-  testSelectableSaleBehavior,
+  testPriceBasedSaleBehavior,
 };
