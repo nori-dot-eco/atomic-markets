@@ -32,7 +32,8 @@ const testPriceBasedSaleBehavior = () => {
       nft = await ExampleNFT.new('NFT', 'nft');
       priceBasedMarket = await PriceBasedMarketplace.new(
         nft.address,
-        token.address
+        token.address,
+        10
       );
       await token.mint(buyer, web3.toWei('100'), '');
       await nft.mintWithoutId(seller);
