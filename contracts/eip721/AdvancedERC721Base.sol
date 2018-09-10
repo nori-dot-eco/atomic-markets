@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 import "./AdvancedERC721.sol";
 import "./ERC721Operator.sol";
-import "../eip820/contracts/ERC820Implementer.sol";
+import "../../node_modules/eip820/contracts/ERC820Implementer.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721Mintable.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721Pausable.sol";
 

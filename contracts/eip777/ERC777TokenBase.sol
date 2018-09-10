@@ -8,7 +8,7 @@ import "./ERC777TokensOperator.sol";
 import "../eip20/ERC20Token.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../eip820/contracts/ERC820Implementer.sol";
+import "../../node_modules/eip820/contracts/ERC820Implementer.sol";
 
 
 contract ERC777TokenBase is Ownable, ERC20Token, ERC777Token, ERC820Implementer {
