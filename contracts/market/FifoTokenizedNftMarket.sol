@@ -1,11 +1,11 @@
 pragma solidity ^0.4.24;
 import "./StandardTokenizedNftMarket.sol";
 import "../eip777/ERC777TokensOperator.sol";
-import "../eip721/IERC721Operator.sol";
+import "../eip721/ERC721Operator.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
-contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOperator, IERC721Operator {
+contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOperator, ERC721Operator {
   using SafeMath for uint256;
 
   int[] public nftsForSale;

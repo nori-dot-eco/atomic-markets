@@ -92,6 +92,20 @@ const testPriceBasedSaleBehavior = () => {
           assert.equal(nftOwner, buyer, 'The buyer does not own the NFT');
         });
       });
+      describe('ExampleAdvancedToken.clearApprovalAndCall', () => {
+        it('should purchase the NFT for sale', async () => {
+          let nftOwner = await nft.ownerOf(0);
+          assert.equal(
+            nftOwner,
+            seller,
+            'The seller does not own the NFT before canceling the sale'
+          );
+          await nft.clearApprovalAndCall(0, { from: seller });
+          nftOwner = await nft.ownerOf(0);
+
+          assert.equal(nftOwner, seller, 'The buyer does not own the NFT');
+        });
+      });
     });
   });
 };

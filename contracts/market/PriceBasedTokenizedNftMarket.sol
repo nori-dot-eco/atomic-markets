@@ -1,10 +1,10 @@
 pragma solidity ^0.4.24;
 import "./StandardTokenizedNftMarket.sol";
 import "../eip777/ERC777TokensOperator.sol";
-import "../eip721/IERC721Operator.sol";
+import "../eip721/ERC721Operator.sol";
 
 
-contract PriceBasedTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOperator, IERC721Operator {
+contract PriceBasedTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOperator, ERC721Operator {
 
   constructor(
     address _nftContract,
@@ -79,7 +79,7 @@ contract PriceBasedTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
     if (preventNFTOperator) {
       revert("This contract does not currently support being revoked an operator of NFTs");
     }
-    //removeSale(_nftId);
+    _removeSale(_nftId);
   }
 
 

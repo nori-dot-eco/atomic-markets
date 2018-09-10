@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-interface IERC721Operator {
+interface ERC721Operator {
   function madeOperatorForNFT(
     address operator,
     address from,

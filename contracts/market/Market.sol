@@ -18,7 +18,7 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
     preventTokenOperator = false;
     setInterfaceImplementation("ERC777TokensOperator", this);
     preventNFTOperator = false;
-    setInterfaceImplementation("IERC721Operator", this);
+    setInterfaceImplementation("ERC721Operator", this);
   }
 
   function canImplementInterfaceForAddress(address, bytes32) public view returns(bytes32) {
@@ -32,6 +32,6 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
 
   function enableNFTOperator() public onlyOwner {
     preventNFTOperator = false;
-    setInterfaceImplementation("IERC721Operator", this);
+    setInterfaceImplementation("ERC721Operator", this);
   }
 }
