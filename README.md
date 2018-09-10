@@ -2,8 +2,9 @@
  <img width="735px" padding-left="100" height="100" alt="box-img-sm-template" src="https://user-images.githubusercontent.com/18407013/45330311-ac0ad100-b519-11e8-824d-700aa9d66aa3.png">
 </p>
 <p align="center">
-<h1>Everything you need to quickly jump in and begin swapping non-fungible tokens for other tokens using Ethereum smart contacts</h1>
+<h1 align="center">Everything you need to quickly jump in and begin swapping non-fungible tokens for other tokens</h1>
 </p>
+
 ---
 
 ## Quick Start
