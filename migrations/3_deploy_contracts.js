@@ -10,12 +10,7 @@ module.exports = (deployer, network, accounts) => {
       'sym',
       1
     );
-    const nft = await deployer.deploy(ExampleNFT, 'NFT', 'nft', accounts[0]);
-    await deployer.deploy(
-      PriceBasedMarketplace,
-      nft.address,
-      token.address,
-      accounts[0]
-    );
+    const nft = await deployer.deploy(ExampleNFT, 'NFT', 'nft');
+    await deployer.deploy(PriceBasedMarketplace, nft.address, token.address);
   });
 };

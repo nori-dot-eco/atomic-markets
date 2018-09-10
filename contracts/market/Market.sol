@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 import "../eip820/contracts/ERC820Implementer.sol";
 import "../eip820/contracts/ERC820ImplementerInterface.sol";
-import "../../node_modules/zeppelin-solidity/contracts//math/SafeMath.sol";
-import "../../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "../../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
@@ -13,8 +13,7 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
   bool internal preventNFTReceived = true;
   bool internal preventNFTOperator = true;
 
-  constructor(address _owner) public {
-    owner = _owner;
+  constructor() public {
     erc820Registry = ERC820Registry(0xa691627805d5FAE718381ED95E04d00E20a1fea6);
     preventTokenOperator = false;
     setInterfaceImplementation("ERC777TokensOperator", this);

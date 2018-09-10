@@ -6,9 +6,8 @@ contract FifoMarketplace is FifoTokenizedNftMarket {
 
   constructor(
     address _nftContract,
-    address _tokenContract,
-    address _owner
-  ) FifoTokenizedNftMarket(_nftContract, _tokenContract, _owner) public {
+    address _tokenContract
+  ) FifoTokenizedNftMarket(_nftContract, _tokenContract) public {
     // Delegate constructor
   }
 

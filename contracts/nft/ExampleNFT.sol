@@ -1,16 +1,14 @@
 pragma solidity ^0.4.24;
-import "../eip721/AdvancedERC721.sol";
+import "../eip721/AdvancedERC721Base.sol";
 
-contract ExampleNFT is AdvancedERC721 {
+contract ExampleNFT is AdvancedERC721Base {
 
   constructor(
     string _name,
-    string _symbol,
-    address _owner
-  ) public AdvancedERC721 (
+    string _symbol
+  ) public AdvancedERC721Base (
     _name,
-    _symbol,
-    _owner
+    _symbol
   ) {
     // Delegate Constructor
   }

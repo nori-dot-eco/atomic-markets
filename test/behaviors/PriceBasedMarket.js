@@ -21,19 +21,16 @@ const sell = (from, id, value) =>
     [from, id, value]
   );
 
-let priceBasedMarket, nft, token, admin, buyer, seller;
+let priceBasedMarket, nft, token, buyer, seller;
 const testPriceBasedSaleBehavior = () => {
   contract(`PriceBasedMarket`, () => {
     beforeEach(async () => {
-      ({ buyer0: buyer, seller0: seller, admin0: admin } = getNamedAccounts(
-        web3
-      ));
+      ({ buyer0: buyer, seller0: seller } = getNamedAccounts(web3));
       token = await ExampleAdvancedToken.new('Token', 'sym', 1);
-      nft = await ExampleNFT.new('NFT', 'nft', admin);
+      nft = await ExampleNFT.new('NFT', 'nft');
       priceBasedMarket = await PriceBasedMarketplace.new(
         nft.address,
-        token.address,
-        admin
+        token.address
       );
       await token.mint(buyer, web3.toWei('100'), '');
       await nft.mintWithoutId(seller);
@@ -58,7 +55,6 @@ const testPriceBasedSaleBehavior = () => {
 
     context('Create a NFT sale and then buy using tokens', () => {
       beforeEach(async () => {
-        console.log(sell(seller, 0, web3.toWei('100')));
         await nft.approveAndCall(
           priceBasedMarket.address,
           0,

@@ -9,9 +9,7 @@ const testFifoSaleBehavior = () => {
       token = await artifacts
         .require('ExampleAdvancedToken')
         .new('Token', 'sym', 1, 0, getNamedAccounts(web3).admin0);
-      nft = await artifacts
-        .require('ExampleNFT')
-        .new('NFT', 'nft', getNamedAccounts(web3).admin0);
+      nft = await artifacts.require('ExampleNFT').new('NFT', 'nft');
       fifoMarket = await artifacts
         .require('FifoMarketplace')
         .new([nft.address, token.address], getNamedAccounts(web3).admin0);
