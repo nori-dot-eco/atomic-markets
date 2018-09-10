@@ -1,6 +1,10 @@
-# Atomic Swap Marketplaces
+<p align="center">
+ <img width="735" padding-left="100" height="100" alt="box-img-sm-template" src="https://user-images.githubusercontent.com/18407013/45285573-53dfba80-b498-11e8-8cf8-36007f6a88fb.png">
+</p>
+
 
 ## **Everything you need to quickly jump in and begin swapping non-fungible tokens for other tokens using Ethereum smart contacts**
+
 
 ---
 
@@ -42,7 +46,7 @@ truffle test
 ### Check out the [latest post on this topic here](https://hackernoon.com/test-bd14e0e1170d)
 
 There are multiple types of markets:
-
+cen
 - Selectable: a market where buyers and sellers can choose which NFT they want to purchase with their tokens.
 
 - **WIP** _First-in-first-out (FIFO): a market where NFTs are bought and sold in a first-in-first-out queue (similar to a spot market). In this market, buyers do not get to choose which NFTs they are purchasing._
