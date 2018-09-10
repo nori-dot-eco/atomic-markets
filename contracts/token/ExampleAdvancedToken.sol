@@ -1,17 +1,17 @@
 pragma solidity ^0.4.24;
-import "../eip777/EIP777TokenBase.sol";
+import "../eip777/ExtendedERC777TokenBase.sol";
 
 
 /**
-  @title ExampleAdvancedToken is an EIP777 token
+  @title ExampleAdvancedToken is an ERC777 token
 */
-contract ExampleAdvancedToken is EIP777TokenBase {
+contract ExampleAdvancedToken is ExtendedERC777TokenBase {
 
   constructor(
     string _name,
     string _symbol,
     uint256 _granularity
-  ) EIP777TokenBase(
+  ) ExtendedERC777TokenBase(
     _name,
     _symbol,
     _granularity
