@@ -1,66 +1,30 @@
 pragma solidity ^0.4.24;
 
-import "./ICommodityRecipient.sol";
+import "./IAdvancedERC721.sol";
 import "./IERC721Operator.sol";
-import "./ICommoditySender.sol";
 import "../eip820/contracts/ERC820Implementer.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721Mintable.sol";
 import "../../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721Pausable.sol";
 
-
-//todo rename to AdvancedERC721
-contract AdvancedERC721 is ERC721Mintable, ERC721Pausable, ERC820Implementer {
+/// @title  AdvancedERC721Base: a fully backward compatible extension to the ERC721 interfaces to be more
+/// closely consumable to the example of invoking call data upon approving allowances to operators
+/// akin to the implementation inside the example ERC 777 token extensions in this repository.
+/// Note: for simplicity of the example of these atomic market contracts, I have RAdvancedERC721Base
+/// callSender, operatorSend, send, callRecipient etc functions (defined in ERC 777 and ERC 820).
+/// In a live implementation you should probably prefer to use those instead.
+contract AdvancedERC721Base is ERC721Mintable, ERC721Pausable, ERC820Implementer, IAdvancedERC721 {
   using SafeMath for uint256;
 
   /*** EVENTS ***/
-  event AuthorizedOperator(address operator, address indexed tokenHolder); //todo rename
   event RevokedOperator(address indexed operator, address indexed tokenHolder); //todo write cancel sale using this
-
-  event Send(
-    address  from,
-    address  to,
-    uint256 tokenId,
-    bytes userData,
-    address  operator,
-    bytes operatorData
-  );
 
   constructor(
     string _name,
-    string _symbol,
-    address _owner //todo fix/rm this
+    string _symbol
   ) public ERC721Full(_name, _symbol) {
-    // owner = _owner;
     erc820Registry = ERC820Registry(0xa691627805d5FAE718381ED95E04d00E20a1fea6);
     setInterfaceImplementation("IERC721", this);
-    //todo register advanced721 interfaces instead
-  }
-
-  //todo can this be used with safetransferfrom
-  /** @dev Notify a recipient of received tokens. */
-  function callRecipient(
-    address _operator,
-    address _from,
-    address _to,
-    uint256 _tokenId,
-    bytes _userData,
-    bytes _operatorData,
-    bool _preventLocking
-  ) internal {
-    require(_isApprovedOrOwner(msg.sender, _tokenId), "Only a nft owner can use 'callRecipient'");
-    address recipientImplementation = interfaceAddr(_to, "IERC721Recipient");
-    if (recipientImplementation != 0) {
-      ICommodityRecipient(recipientImplementation).commodityReceived( //todo erc721 recipient
-        _operator,
-        _from,
-        _to,
-        _tokenId,
-        _userData,
-        _operatorData
-      );
-    } else if (_preventLocking) {
-      require(isRegularAddress(_to), "The recipient contract does not support this NFT");
-    }
+    setInterfaceImplementation("IAdvancedERC721", this);
   }
 
   function callOperator(
@@ -73,7 +37,7 @@ contract AdvancedERC721 is ERC721Mintable, ERC721Pausable, ERC820Implementer {
     bytes _operatorData,
     bool _preventLocking
   ) internal {
-    require(ownerOf(_tokenId) == msg.sender, "Only the owner can use 'callOperator'");
+    require(ownerOf(_tokenId) == msg.sender, "Only the owner of the NFT can use 'callOperator'");
     address recipientImplementation = interfaceAddr(_to, "IERC721Operator");
     if (recipientImplementation != 0) {
       IERC721Operator(recipientImplementation).madeOperatorForNFT(
@@ -133,78 +97,6 @@ contract AdvancedERC721 is ERC721Mintable, ERC721Pausable, ERC820Implementer {
       require(isRegularAddress(_to), "The recipient contract does not support revocation of this NFT");
     }
   }
-  //todo is this needed with safetransferfrom
-  function callSender(
-    address _operator,
-    address _from,
-    address _to,
-    uint256 _tokenId,
-    bytes _userData,
-    bytes _operatorData,
-    bool _preventLocking
-  ) internal {
-    require(_isApprovedOrOwner(msg.sender, _tokenId), "Only an approved address can use 'callSender'");
-    address recipientImplementation = interfaceAddr(_to, "IERC721Sender");
-    if (recipientImplementation != 0) {
-      ICommoditySender(recipientImplementation).commodityToSend( //todo nftsender
-        _operator,
-        _from,
-        _to,
-        _tokenId,
-        _userData,
-        _operatorData
-      );
-    } else if (_preventLocking) {
-      require(isRegularAddress(_to), "The recipient contract does not support sending of NFTs");
-    }
-  }
-
-  /** @dev Perform an actual send of tokens. */
-  function doSend(
-    address _from,
-    address _to,
-    uint256 _tokenId,
-    bytes _userData,
-    address _operator,
-    bytes _operatorData,
-    bool _preventLocking
-  ) internal {
-    callSender(
-      _operator,
-      _from,
-      _to,
-      _tokenId,
-      _userData,
-      _operatorData,
-      false
-    );
-    require(_to != address(0), "You can not send to the burn address (0x0)"); // forbid sending to 0x0 (=burning)
-    require(_tokenId >= 0, "You can only send a valid NFT (>=0)");      // only send positive amounts
-    require(
-      _isApprovedOrOwner(msg.sender, _tokenId),
-      "Only an approved operator or the owner can send this nft"
-    );
-
-    safeTransferFrom(_from, _to, _tokenId);
-    callRecipient(
-      _operator,
-      _from,
-      _to,
-      _tokenId,
-      _userData,
-      _operatorData,
-      _preventLocking
-    );
-
-    emit Send(
-      _from,
-      _to,
-      _tokenId,
-      _userData,
-      _operator,
-      _operatorData
-    );
-  }
 
   /** @notice Check whether an address is a regular address or not. */
   function isRegularAddress(address _addr) internal view returns(bool) {
@@ -216,79 +108,25 @@ contract AdvancedERC721 is ERC721Mintable, ERC721Pausable, ERC820Implementer {
     return size == 0;
   }
 
-  //todo is this needed in addition to safetransferfrom
-  /** @notice Send '_value' amount of tokens to address '_to'. */
-  function send(address _to, uint256 _tokenId) public {
-    doSend(
-      msg.sender,
-      _to,
-      _tokenId,
-      "",
-      msg.sender,
-      "",
-      true
-    );
-  }
-
-  //todo is this needed in addition to safetransferfrom
-  /** @notice Send '_value' amount of tokens to address '_to'. */
-  function send(address _to, uint256 _tokenId, bytes _userData) public {
-    doSend(
-      msg.sender,
-      _to,
-      _tokenId,
-      _userData,
-      msg.sender,
-      "",
-      true
-    );
-  }
-
-  // Todo jaycen : is sendFrom or operatorSend the accepted standard (check pre-launch) to protect from backward/thirdparty compatibility issues
-  function operatorSend(
-    address _from,
-    address _to,
-    uint256 _tokenId,
-    bytes _userData,
-    address _operator,
-    bytes _operatorData,
-    bool _preventLocking
-  ) public {
-    // Safety check to prevent against an unexpected 0x0 default.
-    require(_to != address(0), "You cannot send to the 0 address (0x0)");
-    require(
-      _isApprovedOrOwner(msg.sender, _tokenId),
-      "Only an approved operator can send the NFT on the owner's behalf"
-    );
-    callRecipient(
-      _operator,
-      _from,
-      _to,
-      _tokenId,
-      _userData,
-      _operatorData,
-      _preventLocking
-    );
-
-    // Reassign ownership, clear pending approvals, emit Transfer event.
-    safeTransferFrom(_from, _to, _tokenId);
-  }
-
-
-  function approveAndCall(address _operator, uint256 _tokenId, bytes _data) public {
+  // Note: for the sake of simplicity for this example, we will use the ERC 777/ ERC 820
+  // recipient calling functionality. Since we need to use the 777 token anyways,
+  // and for the purpose of atomic markets all we care about is the operator/spender/allowance
+  // functions, we will only add this function to work in a way that is pretty much identical
+  // to the way it works in the ERC 777 example token
+  /// @notice approves another address the specified allowance and passes the recipient data which
+  /// can be used for execution
+  function approveAndCall(address _operator, uint256 _tokenId, bytes _data) external {
     approve(_operator, _tokenId);
     callOperator(
       _operator,
       msg.sender,
       _operator,
       _tokenId,
-      0, //todo allow for fractional values to be passed by using the split function
+      0, // this will be used in a future version
       _data,
       "",
       false
     );
-    emit AuthorizedOperator(_operator, msg.sender); //todo use correct event emission
-
   }
 
   //todo fix this
@@ -320,6 +158,7 @@ contract AdvancedERC721 is ERC721Mintable, ERC721Pausable, ERC820Implementer {
     emit RevokedOperator(_operator, msg.sender);
   }
 
+  /// @dev Mints a new NFT assigning it an id equal to the latest index
   function mintWithoutId(address _to) public onlyMinter {
     uint256 tokenId = totalSupply();
     mint(_to, tokenId);

@@ -8,9 +8,8 @@ contract PriceBasedTokenizedNftMarket is StandardTokenizedNftMarket, ERC777Token
 
   constructor(
     address _nftContract,
-    address _tokenContract,
-    address _owner
-  ) StandardTokenizedNftMarket(_nftContract, _tokenContract, _owner) public {
+    address _tokenContract
+  ) StandardTokenizedNftMarket(_nftContract, _tokenContract) public {
     // delegate constructor
   }
 

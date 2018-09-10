@@ -2,12 +2,12 @@ pragma solidity ^0.4.24;
 import "./MarketLib.sol";
 import "../eip777/ERC777Token.sol";
 import "./Market.sol";
-import "../../node_modules/zeppelin-solidity/contracts//math/SafeMath.sol";
-import "../../node_modules/zeppelin-solidity/contracts/token/ERC721/ERC721.sol";
+import "../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "../../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721.sol";
 
 
 contract StandardTokenizedNftMarket is Market {
-  using SafeMath for uint256; //todo jaycen PRELAUNCH - make sure we use this EVERYWHERE its needed
+  using SafeMath for uint256;
 
   /// @dev Reference to contract tracking NFT ownership
   ERC721 public nft;
@@ -20,7 +20,7 @@ contract StandardTokenizedNftMarket is Market {
   event SaleCreated(uint256 nftId, address seller, uint256 value, uint64 startedAt);
   event NFTReceived(address sender);
 
-  constructor(address _nftContract, address _tokenContract, address _owner) Market(_owner) public {
+  constructor(address _nftContract, address _tokenContract) Market() public {
     setNFTContract(_nftContract);
     setTokenContract(_tokenContract);
     // and delegate constructor

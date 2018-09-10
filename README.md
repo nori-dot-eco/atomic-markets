@@ -18,7 +18,6 @@ The smart contracts contained herein will allow you to create a marketplace for 
 
 #### misc
 
-- remove npm version of open-zeppelin
 - make sure web3 1.0 dependency inside eip820 submodule doesn't interfere with web3 < 1 in root
 - resolve todo items within code
 - remaining tests for selectable market
