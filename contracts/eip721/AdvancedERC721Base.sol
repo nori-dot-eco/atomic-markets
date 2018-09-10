@@ -14,10 +14,8 @@ import "../../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721Pa
 /// callSender, operatorSend, send, callRecipient etc functions (defined in ERC 777 and ERC 820).
 /// In a live implementation you should probably prefer to use those instead.
 contract AdvancedERC721Base is ERC721Mintable, ERC721Pausable, ERC820Implementer, AdvancedERC721 {
-  using SafeMath for uint256;
 
-  /*** EVENTS ***/
-  event RevokedOperator(address indexed operator, address indexed tokenHolder); //todo write cancel sale using this
+  using SafeMath for uint256;
 
   constructor(
     string _name,
@@ -27,48 +25,6 @@ contract AdvancedERC721Base is ERC721Mintable, ERC721Pausable, ERC820Implementer
     setInterfaceImplementation("ERC721", this);
     setInterfaceImplementation("AdvancedERC721", this);
   }
-
-  function callOperator(
-    address _operator,
-    address _from,
-    address _to,
-    uint256 _tokenId,
-    uint256 _value,
-    bytes _userData,
-    bytes _operatorData,
-    bool _preventLocking
-  ) internal {
-    require(ownerOf(_tokenId) == msg.sender, "Only the owner of the NFT can use 'callOperator'");
-    address recipientImplementation = interfaceAddr(_to, "ERC721Operator");
-    if (recipientImplementation != 0) {
-      ERC721Operator(recipientImplementation).madeOperatorForNFT(
-        _operator,
-        _from, //todo must be msg.sender
-        _to,
-        _tokenId,
-        _value,
-        _userData,
-        _operatorData
-      );
-    } else if (_preventLocking) {
-      require(isRegularAddress(_to), "The recipient contract does not support being an operator of this NFT");
-    }
-  }
-
-  //todo use this to cancel sale
-  /// @notice If the recipient address (_to/_operator param) is listed in the registry as supporting
-  ///   the ERC721Operator interface, it calls the revokedOperatorForNFT
-  ///   function.
-  /// @param _operator The _operator being revoked
-  /// @param _from the owner of the NFT
-  /// @param _to the operator address to introspect for ERC721Operator interface support
-  /// @param _tokenId the NFT index
-  /// @param _value the value of the NFT to revoke allowance for. This is currently unfinished.
-  /// @param _userData the data to pass on behalf of the user. This is currently unsupported.
-  /// @param _operatorData the data to pass on behalf of the operator. This is currently unsupported.
-  /// @param _preventLocking used to prevent sending to contract addresses who are not supported by this NFT
-  /// @dev This idea behind functions like this come from EIP 820
-
 
   // Note: for the sake of simplicity for this example, we will use the ERC 777/ ERC 820
   // recipient calling functionality. Since we need to use the 777 token anyways,
@@ -81,7 +37,7 @@ contract AdvancedERC721Base is ERC721Mintable, ERC721Pausable, ERC820Implementer
     approve(_operator, _tokenId);
     callOperator(
       _operator,
-      msg.sender,
+      msg.sender, // note: this MUST always be msg.sender
       _operator,
       _tokenId,
       0, // this will be used in a future version
@@ -115,6 +71,47 @@ contract AdvancedERC721Base is ERC721Mintable, ERC721Pausable, ERC820Implementer
     uint256 tokenId = totalSupply();
     mint(_to, tokenId);
   }
+
+  /// @notice Calls the operator and passes it data if it supports the ERC721Operator interface
+  function callOperator(
+    address _operator,
+    address _from,
+    address _to,
+    uint256 _tokenId,
+    uint256 _value,
+    bytes _userData,
+    bytes _operatorData,
+    bool _preventLocking
+  ) internal {
+    require(ownerOf(_tokenId) == msg.sender, "Only the owner of the NFT can use 'callOperator'");
+    address recipientImplementation = interfaceAddr(_to, "ERC721Operator");
+    if (recipientImplementation != 0) {
+      ERC721Operator(recipientImplementation).madeOperatorForNFT(
+        _operator,
+        _from,
+        _to,
+        _tokenId,
+        _value,
+        _userData,
+        _operatorData
+      );
+    } else if (_preventLocking) {
+      require(isRegularAddress(_to), "The recipient contract does not support being an operator of this NFT");
+    }
+  }
+
+  /// @notice If the recipient address (_to/_operator param) is listed in the registry as supporting
+  ///   the ERC721Operator interface, it calls the revokedOperatorForNFT
+  ///   function.
+  /// @param _operator The _operator being revoked
+  /// @param _from the owner of the NFT
+  /// @param _to the operator address to introspect for ERC721Operator interface support
+  /// @param _tokenId the NFT index
+  /// @param _value the value of the NFT to revoke allowance for. This is currently unfinished.
+  /// @param _userData the data to pass on behalf of the user. This is currently unsupported.
+  /// @param _operatorData the data to pass on behalf of the operator. This is currently unsupported.
+  /// @param _preventLocking used to prevent sending to contract addresses who are not supported by this NFT
+  /// @dev This idea behind functions like this come from EIP 820
 
   function callRevokedOperator(
     address _operator,
