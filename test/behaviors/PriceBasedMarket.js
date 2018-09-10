@@ -95,6 +95,19 @@ const testPriceBasedSaleBehavior = () => {
       describe('ExampleAdvancedToken.clearApprovalAndCall', () => {
         it('should purchase the NFT for sale', async () => {
           let nftOwner = await nft.ownerOf(0);
+          let salePrice = await priceBasedMarket.getSalePrice(0);
+          let approved = await nft.getApproved(0);
+          assert.equal(
+            approved,
+            priceBasedMarket.address,
+            'The market does not have approval'
+          );
+          assert.equal(
+            salePrice,
+            web3.toWei('100'),
+            'The NFT did not list for salw'
+          );
+
           assert.equal(
             nftOwner,
             seller,
@@ -102,7 +115,14 @@ const testPriceBasedSaleBehavior = () => {
           );
           await nft.clearApprovalAndCall(0, { from: seller });
           nftOwner = await nft.ownerOf(0);
-
+          salePrice = await priceBasedMarket.getSalePrice(0);
+          assert.equal(salePrice, 0, 'The NFT is still for sale');
+          approved = await nft.getApproved(0);
+          assert.equal(
+            approved,
+            '0x0000000000000000000000000000000000000000',
+            'The market still has approval'
+          );
           assert.equal(nftOwner, seller, 'The buyer does not own the NFT');
         });
       });

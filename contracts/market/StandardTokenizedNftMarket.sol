@@ -72,7 +72,6 @@ contract StandardTokenizedNftMarket is Market {
       // uint256 marketCut = _computeCut(_amount);
       // uint256 sellerProceeds = sale.value - marketCut;
 
-      emit Buying(_buyer, seller);
       tokenContract.transferFrom( // although you can also do this with operatorSend, it's safer to use an allowance
         _buyer,
         seller,
@@ -82,7 +81,6 @@ contract StandardTokenizedNftMarket is Market {
     emit SaleSuccessful(_nftId, _amount, _buyer);
     return sale.value;
   }
-  event Buying(address buyer, address seller);
 
   function _createSale(
     uint256 _nftId,
