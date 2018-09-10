@@ -1,5 +1,5 @@
 import FifoMarketplaceTests from './FifoMarketplace.test';
-import SelectableMarketplaceTests from './SelectableMarketplace.test';
+import PriceBasedMarketplaceTests from './PriceBasedMarketplace.test';
 
 const {
   admin0,
@@ -33,7 +33,7 @@ context('Setup test environment', () => {
   });
 
   context('Execute tests', () => {
-    SelectableMarketplaceTests();
+    PriceBasedMarketplaceTests();
     // FifoMarketplaceTests(); //todo fix these
   });
 });

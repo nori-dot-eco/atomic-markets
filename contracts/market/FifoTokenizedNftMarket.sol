@@ -10,7 +10,11 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
 
   int[] public nftsForSale;
 
-  constructor(address[] _marketItems, address _owner) StandardTokenizedNftMarket(_marketItems, _owner) public {
+  constructor(
+    address _nftContract,
+    address _tokenContract,
+    address _owner
+  ) StandardTokenizedNftMarket(_nftContract, _tokenContract, _owner) public {
     // delegate constructor
   }
 
@@ -46,19 +50,19 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
   /// @notice This function is called by the CRC contract when this contract
   /// is given authorization to send a particular NFT. When such happens,
   /// a sale for the CRC is created and added to the bottom of the FIFO queue
-  /// @param tokenId the crc to remove from the FIFO sale queue
-  /// @param from the owner of the crc, and the sale proceed recipient
-  /// @param value the number of crcs in a bundle to list for sale
-  /// @param userData data passed by the user
+  /// @param _nftId the crc to remove from the FIFO sale queue
+  /// @param _from the owner of the crc, and the sale proceed recipient
+  /// @param _value the number of crcs in a bundle to list for sale
+  /// @param _userData data passed by the user
   /// @dev this function uses erc820 introspection : handler invoked when
   /// this contract is made an operator for a NFT
   function madeOperatorForNFT(
     address, // operator,
-    address from,
+    address _from,
     address, // to,
-    uint tokenId,
-    uint256 value,
-    bytes userData,
+    uint _nftId,
+    uint256 _value,
+    bytes _userData,
     bytes // operatorData
   ) public {
     require(
@@ -69,12 +73,9 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
       revert("This contract does not currently allow being made the operator of NFTs");
     }
     createSale(
-      tokenId,
-      1,//todo remove hard-code
-      2,
-      from,
-      value,
-      userData
+      _nftId,
+      _from,
+      _value
     );
   }
 
@@ -87,12 +88,12 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
   /// the queue or the result will be a broken market.
   /// @dev this function uses erc820 introspection : handler invoked when
   /// this contract is revoked an operator for a NFT
-  /// @param tokenId the crc to remove from the FIFO sale queue
+  /// @param _nftId the crc to remove from the FIFO sale queue
   function revokedOperatorForNFT(
     address, // operator,
     address, // from,
     address, // to,
-    uint tokenId,
+    uint _nftId,
     uint256, // value,
     bytes, // userData,
     bytes // operatorData
@@ -104,49 +105,43 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
     if (preventNFTOperator) {
       revert("This contract does not currently allow being revoked the operator of NFTs");
     }
-    removeSale(tokenId);
+    removeSale(_nftId);
   }
 
   /// @dev erc820 introspection : handler invoked when this contract
   ///  is made an operator for an erc777 token
   function madeOperatorForTokens(
     address, // operator,
-    address buyer,
+    address _buyer,
     address, // to,
-    uint256 amount,
+    uint256 _amount,
     bytes, // userData,
     bytes // operatorData
   ) public {
     if (preventTokenOperator) {
       revert("This contract does not currently allow being made the operator of tokens");
     }
-    buy(buyer, amount);
+    buy(_buyer, _amount);
   }
 
   //todo only allow from this address (cant make private due to operatorsend data)
   function createSale(
-    uint256 _tokenId,
-    uint64 _category,
-    uint32 _saleType,
+    uint256 _nftId,
     address _seller,
-    uint256 _value,
-    bytes _misc
+    uint256 _value
   ) private {
     _createSale(
-      _tokenId,
-      _category,
-      _saleType,
+      _nftId,
       _seller,
-      _value,
-      _misc
+      _value
     );
-    nftsForSale.push(int(_tokenId)); //todo nftsforsale
+    nftsForSale.push(int(_nftId));
   }
 
-  function removeSale(uint256 _tokenId) private { //todo onlyThisContract modifier
-    _removeSale(_tokenId);
+  function removeSale(uint256 _nftId) private { //todo onlyThisContract modifier
+    _removeSale(_nftId);
     for (uint i = 0; i < nftsForSale.length; i++ ) {
-      if (uint(nftsForSale[i]) == _tokenId) {
+      if (uint(nftsForSale[i]) == _nftId) {
         nftsForSale[i] = -1;
         return;
       }

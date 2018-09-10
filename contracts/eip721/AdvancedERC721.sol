@@ -78,7 +78,7 @@ contract AdvancedERC721 is ERC721Mintable, ERC721Pausable, ERC820Implementer {
     if (recipientImplementation != 0) {
       IERC721Operator(recipientImplementation).madeOperatorForNFT(
         _operator,
-        _from,
+        _from, //todo must be msg.sender
         _to,
         _tokenId,
         _value,
@@ -287,7 +287,7 @@ contract AdvancedERC721 is ERC721Mintable, ERC721Pausable, ERC820Implementer {
       "",
       false
     );
-    emit AuthorizedOperator(_operator, msg.sender);
+    emit AuthorizedOperator(_operator, msg.sender); //todo use correct event emission
 
   }
 

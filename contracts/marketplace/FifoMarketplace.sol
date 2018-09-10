@@ -4,7 +4,11 @@ import "../market/FifoTokenizedNftMarket.sol";
 
 contract FifoMarketplace is FifoTokenizedNftMarket {
 
-  constructor(address[] _marketItems, address _owner) FifoTokenizedNftMarket(_marketItems, _owner) public {
+  constructor(
+    address _nftContract,
+    address _tokenContract,
+    address _owner
+  ) FifoTokenizedNftMarket(_nftContract, _tokenContract, _owner) public {
     // Delegate constructor
   }
 

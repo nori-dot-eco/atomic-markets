@@ -1,18 +1,34 @@
-Todo:
+# Atomic Swap Marketplaces (WIP)
+
+The smart contracts contained herein will allow you to create a marketplace for the swapping of Ethereum non-fungible tokens(NFT) and advanced tokens.
+
+## Todo:
+
+#### Features:
+
+- add fee-taking mechanism
+- add cancel sale mechanism
+- add truffle box config
+
+#### Documentation
+
+- write a note about how it could be extended for updating prices without relisting (might already be possible by re-approving)
+- note that this adds partial erc 820 support, but not full extension for 777 support (but that can be done). It also adds only one additional functions to call when authorizing operator, this call matches erc820 rather than the standard erc721 165 support (but should be backward compatible-- Ive chosen to use 820 support to match that of the token's erc777 support so as not be more ubiquitous and hopefully not to be confusing for readers/users)
+- install directions (including for submodule) `<-- maybe just use npm packages`
+
+#### misc
 
 - remove npm version of open-zeppelin
 - make sure web3 1.0 dependency inside eip820 submodule doesn't interfere with web3 < 1 in root
-- install directions (including for submodule) `<-- maybe just use npm packages`
-- write tests + implementation for FIFO market
-- rename selectable to spot market?
-- add truffle box config
-- modify buy/sell to be a generic "create order" so that tokens/nft orders can be added in any order (currently the contracts require creating the NFT sale, and then buying it with a token-- we can instead generalize and just add an order book that checks if there is a matching order upon invoking a function called `createOrder`)
 - resolve todo items within code
 - remaining tests for selectable market
 
-# Atomic Swap Marketplaces
+#### future
 
-The smart contracts contained herein will allow you to create a marketplace for the swapping of Ethereum non-fungible tokens(NFT) and advanced tokens.
+- modify buy/sell to be a generic "create order" so that tokens/nft orders can be added in any order (currently the contracts require creating the NFT sale, and then buying it with a token-- we can instead generalize and just add an order book that checks if there is a matching order upon invoking a function called `createOrder`)
+- write tests + implementation for FIFO market
+
+===
 
 ## Market Contracts
 
