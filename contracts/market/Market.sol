@@ -14,8 +14,8 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
   bool internal preventNFTOperator = true;
   uint256 public ownersCut;
 
-  constructor() public {
-    ownersCut = 10;
+  constructor(uint256 _ownersCut) public {
+    ownersCut = _ownersCut;
     erc820Registry = ERC820Registry(0xa691627805d5FAE718381ED95E04d00E20a1fea6);
     preventTokenOperator = false;
     setInterfaceImplementation("ERC777TokensOperator", this);

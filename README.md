@@ -6,7 +6,6 @@ The smart contracts contained herein will allow you to create a marketplace for 
 
 #### Features:
 
-- add fee-taking mechanism
 - add truffle box config
 
 #### Documentation

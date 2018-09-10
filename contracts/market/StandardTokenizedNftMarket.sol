@@ -20,7 +20,7 @@ contract StandardTokenizedNftMarket is Market {
   event SaleCreated(uint256 nftId, address seller, uint256 value, uint64 startedAt);
   event NFTReceived(address sender);
 
-  constructor(address _nftContract, address _tokenContract) Market() public {
+  constructor(address _nftContract, address _tokenContract, uint256 _ownersCut) Market(_ownersCut) public {
     setNFTContract(_nftContract);
     setTokenContract(_tokenContract);
     // and delegate constructor

@@ -12,8 +12,9 @@ contract FifoTokenizedNftMarket is StandardTokenizedNftMarket, ERC777TokensOpera
 
   constructor(
     address _nftContract,
-    address _tokenContract
-  ) StandardTokenizedNftMarket(_nftContract, _tokenContract) public {
+    address _tokenContract,
+    uint256 _ownersCut
+  ) StandardTokenizedNftMarket(_nftContract, _tokenContract, _ownersCut) public {
     // delegate constructor
   }
 
