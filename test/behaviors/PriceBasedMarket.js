@@ -42,7 +42,7 @@ const testPriceBasedSaleBehavior = () => {
           await nft.approveAndCall(
             priceBasedMarket.address,
             0,
-            sell(seller, 0, 100),
+            sell(seller, 0, web3.toWei('100')),
             {
               from: seller,
             }

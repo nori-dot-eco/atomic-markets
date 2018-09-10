@@ -1,4 +1,3 @@
-/* globals network */
 const getNamedAccounts = require('../helpers/getNamedAccounts');
 
 let fifoMarket, nft, token;

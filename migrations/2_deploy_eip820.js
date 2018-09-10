@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-/* eslint-disable no-unused-expressions no-console */
+/* eslint-disable no-console */
 
 const contract = require('truffle-contract');
 const generateDeployTx = require('../contracts/eip820/js/deployment')

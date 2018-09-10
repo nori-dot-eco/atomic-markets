@@ -4,7 +4,7 @@ import "../market/PriceBasedTokenizedNftMarket.sol";
 
 contract PriceBasedMarketplace is PriceBasedTokenizedNftMarket {
 
-   constructor(
+  constructor(
     address _nftContract,
     address _tokenContract
   ) PriceBasedTokenizedNftMarket(_nftContract, _tokenContract) public {
