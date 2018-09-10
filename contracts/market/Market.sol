@@ -12,8 +12,10 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
   bool internal preventTokenOperator = true;
   bool internal preventNFTReceived = true;
   bool internal preventNFTOperator = true;
+  uint256 public ownersCut;
 
-  constructor() public {
+  constructor(uint256 _ownersCut) public {
+    ownersCut = _ownersCut;
     erc820Registry = ERC820Registry(0xa691627805d5FAE718381ED95E04d00E20a1fea6);
     preventTokenOperator = false;
     setInterfaceImplementation("ERC777TokensOperator", this);
@@ -33,5 +35,10 @@ contract Market is Ownable, ERC820Implementer, ERC820ImplementerInterface {
   function enableNFTOperator() public onlyOwner {
     preventNFTOperator = false;
     setInterfaceImplementation("ERC721Operator", this);
+  }
+
+  ///@notice sets the percentage of sale's values that the owner will receive for every sale
+  function setOwnersCut(uint256 _newCut) public onlyOwner {
+    ownersCut = _newCut;
   }
 }

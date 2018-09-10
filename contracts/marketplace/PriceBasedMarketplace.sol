@@ -6,8 +6,9 @@ contract PriceBasedMarketplace is PriceBasedTokenizedNftMarket {
 
   constructor(
     address _nftContract,
-    address _tokenContract
-  ) PriceBasedTokenizedNftMarket(_nftContract, _tokenContract) public {
+    address _tokenContract,
+    uint256 _ownersCut
+  ) PriceBasedTokenizedNftMarket(_nftContract, _tokenContract, _ownersCut) public {
     // Delegate constructor
   }
 

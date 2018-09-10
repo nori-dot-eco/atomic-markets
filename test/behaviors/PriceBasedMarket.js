@@ -21,16 +21,19 @@ const sell = (from, id, value) =>
     [from, id, value]
   );
 
-let priceBasedMarket, nft, token, buyer, seller;
+let priceBasedMarket, nft, token, buyer, seller, admin;
 const testPriceBasedSaleBehavior = () => {
   contract(`PriceBasedMarket`, () => {
     beforeEach(async () => {
-      ({ buyer0: buyer, seller0: seller } = getNamedAccounts(web3));
+      ({ buyer0: buyer, seller0: seller, admin0: admin } = getNamedAccounts(
+        web3
+      ));
       token = await ExampleAdvancedToken.new('Token', 'sym', 1);
       nft = await ExampleNFT.new('NFT', 'nft');
       priceBasedMarket = await PriceBasedMarketplace.new(
         nft.address,
-        token.address
+        token.address,
+        10
       );
       await token.mint(buyer, web3.toWei('100'), '');
       await nft.mintWithoutId(seller);
@@ -67,6 +70,20 @@ const testPriceBasedSaleBehavior = () => {
       describe('ExampleAdvancedToken.approveAndCall', () => {
         it('should purchase the NFT for sale', async () => {
           let nftOwner = await nft.ownerOf(0);
+          let marketOwnerBalance = await token.balanceOf(admin);
+          let buyerTokenBalance = await token.balanceOf(buyer);
+          let sellerTokenBalance = await token.balanceOf(seller);
+          assert.equal(
+            buyerTokenBalance,
+            web3.toWei('100'),
+            'buyer does not have enough tokens to buy the NFT'
+          );
+          assert.equal(sellerTokenBalance, 0, 'seller already has tokens');
+          assert.equal(
+            marketOwnerBalance,
+            0,
+            'The market operator already has a balance'
+          );
           assert.equal(nftOwner, seller);
           await token.approveAndCall(
             priceBasedMarket.address,
@@ -77,8 +94,14 @@ const testPriceBasedSaleBehavior = () => {
             }
           );
           nftOwner = await nft.ownerOf(0);
-          const buyerTokenBalance = await token.balanceOf(buyer);
-          const sellerTokenBalance = await token.balanceOf(seller);
+          buyerTokenBalance = await token.balanceOf(buyer);
+          sellerTokenBalance = await token.balanceOf(seller);
+          marketOwnerBalance = await token.balanceOf(admin);
+          assert.equal(
+            marketOwnerBalance,
+            web3.toWei('10'),
+            'the market owner did not receive their profit'
+          );
           assert.equal(
             buyerTokenBalance.toString(),
             0,
@@ -86,7 +109,7 @@ const testPriceBasedSaleBehavior = () => {
           );
           assert.equal(
             sellerTokenBalance.toString(),
-            web3.toWei('100'),
+            web3.toWei('90'),
             'seller did not receive the tokens'
           );
           assert.equal(nftOwner, buyer, 'The buyer does not own the NFT');
@@ -105,9 +128,8 @@ const testPriceBasedSaleBehavior = () => {
           assert.equal(
             salePrice,
             web3.toWei('100'),
-            'The NFT did not list for salw'
+            'The NFT did not list for sale'
           );
-
           assert.equal(
             nftOwner,
             seller,
