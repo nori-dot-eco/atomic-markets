@@ -6,11 +6,13 @@
 
 ## Quick Start
 
-> truffle unbox nori-dot-eco/atomic-markets
+```
+truffle unbox nori-dot-eco/atomic-markets
+```
 
-> yarn install
-
-> truffle test
+```
+truffle test
+```
 
 ## Key features
 
@@ -36,6 +38,8 @@
 ## Market Contracts
 
 ### Background
+
+### Check out the [latest post on this topic here](https://hackernoon.com/test-bd14e0e1170d)
 
 There are multiple types of markets:
 
