@@ -1,10 +1,9 @@
 <p align="center">
- <img width="735" padding-left="100" height="100" alt="box-img-sm-template" src="https://user-images.githubusercontent.com/18407013/45330190-0fe0ca00-b519-11e8-8407-0918bacb8f05.png">
+ <img width="735px" padding-left="100" height="100" alt="box-img-sm-template" src="https://user-images.githubusercontent.com/18407013/45330311-ac0ad100-b519-11e8-824d-700aa9d66aa3.png">
 </p>
-
-
-
-## **Everything you need to quickly jump in and begin swapping non-fungible tokens for other tokens using Ethereum smart contacts**
+<p align="center">
+<h1 align="center">Everything you need to quickly jump in and begin swapping non-fungible tokens for other tokens</h1>
+</p>
 
 ---
 
@@ -52,7 +51,7 @@ truffle test
 There are multiple types of markets:
 cen
 
-- Selectable: a market where buyers and sellers can choose which NFT they want to purchase with their tokens.
+- Price Based: a market where buyers and sellers can choose which NFT they want to purchase with their tokens.
 
 - **WIP** _First-in-first-out (FIFO): a market where NFTs are bought and sold in a first-in-first-out queue (similar to a spot market). In this market, buyers do not get to choose which NFTs they are purchasing._
 
@@ -86,7 +85,7 @@ Basically, the market "listens" for sellers who say "I want to sell this NFT", a
 
 - notes on how this box adds partial erc 820 support, but not full extension for 777 support (but that can be done). It also adds only one additional functions to call when authorizing operator, this call matches erc820 rather than the standard erc721 165 support (but should be backward compatible-- Ive chosen to use 820 support to match that of the token's erc777 support so as not be more ubiquitous and hopefully not to be confusing for readers/users)
 
-#### future
+#### Future
 
 - modify buy/sell to be a generic "create order" so that tokens/nft orders can be added in any order (currently the contracts require creating the NFT sale, and then buying it with a token-- we can instead generalize and just add an order book that checks if there is a matching order upon invoking a function called `createOrder`)
 - write implementation for FIFO market (for a preview, you can see an implementation of that logic in the [Nori contracts github repository](https://github.com/nori-dot-eco/contracts/tree/master/contracts/market)
