@@ -154,4 +154,15 @@ contract AdvancedERC721Base is ERC721Mintable, ERC721Pausable, ERC820Implementer
     return size == 0;
   }
 
+  /** @notice helper function to get all of the NFTs an address is approved for */
+  function getAllApprovedFor(address _operator) public returns(uint256[]) {
+    uint256[] storage approvals;
+    for (uint256 i = 0; i < totalSupply(); i++ ) {
+      if(getApproved(i) == _operator){
+        approvals.push(i);
+      }
+    }
+    return approvals;
+  }
+
 }

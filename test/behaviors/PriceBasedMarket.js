@@ -67,6 +67,18 @@ const testPriceBasedSaleBehavior = () => {
           }
         );
       });
+      describe('ExampleNFT.getAllApprovedFor', () => {
+        it('should get the ids of every NFT for sale', async () => {
+          const nftsForSale = await nft.getAllApprovedFor.call(
+            priceBasedMarket.address
+          );
+          assert.equal(
+            nftsForSale[0],
+            web3.toWei(0),
+            'Market does not have the sale listings for the NFT contract'
+          );
+        });
+      });
       describe('ExampleAdvancedToken.approveAndCall', () => {
         it('should purchase the NFT for sale', async () => {
           let nftOwner = await nft.ownerOf(0);
